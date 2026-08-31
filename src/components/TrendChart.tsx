@@ -53,18 +53,25 @@ export default function TrendChart({ data, startLabel, endLabel }: TrendChartPro
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        {data.map((v, i) => (
+        {data.slice(0, -1).map((v, i) => (
           <circle
             key={i}
             cx={xAt(i)}
             cy={yAt(v)}
-            r={i === data.length - 1 ? 6 : 4}
-            fill={i === data.length - 1 ? "var(--color-accent)" : "var(--color-surface)"}
+            r={3.5}
+            fill="var(--color-surface)"
             stroke="var(--color-accent)"
             strokeWidth={2}
           />
         ))}
-        <text x={xAt(data.length - 1) - 12} y={yAt(last) + 5} fontSize={14} fontWeight={700} fill="var(--color-accent)" textAnchor="end">
+        <text
+          x={xAt(data.length - 1)}
+          y={yAt(last) - 8}
+          fontSize={14}
+          fontWeight={700}
+          fill="var(--color-accent)"
+          textAnchor="end"
+        >
           {last}%
         </text>
         <text x={xAt(0)} y={H + 18} fontSize={11} fill="var(--color-text-secondary)">
