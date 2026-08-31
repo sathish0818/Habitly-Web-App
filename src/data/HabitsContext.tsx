@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useAuth } from "./AuthContext";
 
 export type Frequency = "daily" | "weekly" | "custom";
 
@@ -14,7 +15,8 @@ export type Habit = {
   completionRate: number;
 };
 
-const STORAGE_KEY = "habitly.habits";
+const STORAGE_PREFIX = "habitly.habits.";
+const DEMO_EMAIL = "alex@habitly.app";
 
 const SEED_HABITS: Habit[] = [
   { id: "1", name: "Drink water", icon: "water_drop", frequency: "daily", reminder: "8:00 AM", streak: 12, completedToday: true, totalCheckIns: 132, completionRate: 90 },
@@ -23,15 +25,18 @@ const SEED_HABITS: Habit[] = [
   { id: "4", name: "Meditate", icon: "self_improvement", frequency: "daily", reminder: "9:00 PM", streak: 12, completedToday: true, totalCheckIns: 112, completionRate: 85 },
 ];
 
-function loadHabits(): Habit[] {
+function loadHabitsFor(email: string | null): Habit[] {
+  if (!email) return [];
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return SEED_HABITS;
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : SEED_HABITS;
+    const raw = localStorage.getItem(STORAGE_PREFIX + email);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
   } catch {
-    return SEED_HABITS;
+    // fall through to default
   }
+  return email === DEMO_EMAIL ? SEED_HABITS : [];
 }
 
 type NewHabitInput = {
@@ -59,11 +64,22 @@ type HabitsContextValue = {
 const HabitsContext = createContext<HabitsContextValue | null>(null);
 
 export function HabitsProvider({ children }: { children: ReactNode }) {
-  const [habits, setHabits] = useState<Habit[]>(loadHabits);
+  const { user } = useAuth();
+  const email = user?.email ?? null;
+
+  const [habits, setHabits] = useState<Habit[]>(() => loadHabitsFor(email));
+
+  // reload whenever the signed-in account changes (sign in/out, switch account)
+  useEffect(() => {
+    setHabits(loadHabitsFor(email));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [email]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
-  }, [habits]);
+    if (email) {
+      localStorage.setItem(STORAGE_PREFIX + email, JSON.stringify(habits));
+    }
+  }, [habits, email]);
 
   const addHabit = (input: NewHabitInput) => {
     setHabits((prev) => [
