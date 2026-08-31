@@ -4,12 +4,26 @@ import TrendChart from "../components/TrendChart";
 import Button from "../components/Button";
 import Icon from "../components/Icon";
 
-const WEEKLY_TREND = [42, 47, 52, 50, 58, 64, 61, 71, 78, 87];
-
 export default function StreakStats() {
   const { habits, stats } = useHabits();
   const navigate = useNavigate();
   const ranked = [...habits].sort((a, b) => b.completionRate - a.completionRate);
+
+  const trend = stats.weeklyTrend;
+  const lastWeek = trend[trend.length - 1] ?? 0;
+  const prevWeek = trend[trend.length - 2] ?? 0;
+  const firstWeek = trend[0] ?? 0;
+  const vsLastWeek = lastWeek - prevWeek;
+  const sinceWeekOne = lastWeek - firstWeek;
+  const vsLastWeekLabel =
+    vsLastWeek === 0 ? "Flat vs last week" : `${vsLastWeek > 0 ? "+" : ""}${vsLastWeek}% vs last week`;
+  const sinceWeekOneLabel =
+    sinceWeekOne === 0
+      ? "Steady since week 1"
+      : `${sinceWeekOne > 0 ? "Up" : "Down"} ${Math.abs(sinceWeekOne)} points since week 1${
+          sinceWeekOne > 0 ? " — your most consistent stretch yet" : ""
+        }`;
+  const quarterLabel = `${sinceWeekOne >= 0 ? "+" : ""}${sinceWeekOne}% this quarter`;
 
   return (
     <div className="flex flex-col gap-lg items-start pt-2xl px-2xl w-full">
@@ -30,9 +44,13 @@ export default function StreakStats() {
               <p className="text-md text-text-secondary">days</p>
             </div>
           </div>
-          <div className="flex gap-xs items-center text-success-text">
-            <Icon name="trending_up" style={{ fontSize: 14 }} />
-            <span className="text-xs font-medium">+3 vs last week</span>
+          <div
+            className={`flex gap-xs items-center ${
+              vsLastWeek >= 0 ? "text-success-text" : "text-error"
+            }`}
+          >
+            <Icon name={vsLastWeek >= 0 ? "trending_up" : "trending_down"} style={{ fontSize: 14 }} />
+            <span className="text-xs font-medium">{vsLastWeekLabel}</span>
           </div>
         </div>
 
@@ -64,14 +82,24 @@ export default function StreakStats() {
         <div className="flex items-center justify-between w-full">
           <div className="flex flex-col gap-0.5 items-start">
             <p className="font-semibold text-md text-text-primary">Completion rate — last 10 weeks</p>
-            <p className="text-xs text-text-secondary">Up 45 points since week 1 — your most consistent stretch yet</p>
+            <p className="text-xs text-text-secondary">{sinceWeekOneLabel}</p>
           </div>
-          <div className="bg-success-text/10 flex gap-xs items-center px-sm py-xs rounded-sm shrink-0">
-            <Icon name="trending_up" className="text-success-text" style={{ fontSize: 14 }} />
-            <span className="text-xs font-medium text-success-text">+42% this quarter</span>
+          <div
+            className={`flex gap-xs items-center px-sm py-xs rounded-sm shrink-0 ${
+              sinceWeekOne >= 0 ? "bg-success-text/10" : "bg-error/10"
+            }`}
+          >
+            <Icon
+              name={sinceWeekOne >= 0 ? "trending_up" : "trending_down"}
+              className={sinceWeekOne >= 0 ? "text-success-text" : "text-error"}
+              style={{ fontSize: 14 }}
+            />
+            <span className={`text-xs font-medium ${sinceWeekOne >= 0 ? "text-success-text" : "text-error"}`}>
+              {quarterLabel}
+            </span>
           </div>
         </div>
-        <TrendChart data={WEEKLY_TREND} startLabel="10 wks ago" endLabel="This week" />
+        <TrendChart data={trend} startLabel="10 wks ago" endLabel="This week" />
       </div>
 
       <div className="bg-surface border border-border rounded-lg flex flex-col gap-md items-start p-lg w-full">

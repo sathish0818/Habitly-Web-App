@@ -3,12 +3,17 @@ import { useAuth } from "./AuthContext";
 
 export type Frequency = "daily" | "weekly" | "custom";
 
-export type Habit = {
+type StoredHabit = {
   id: string;
   name: string;
   icon: string;
   frequency: Frequency;
   reminder: string | null;
+  createdAt: string;
+  completedDates: string[];
+};
+
+export type Habit = StoredHabit & {
   streak: number;
   completedToday: boolean;
   totalCheckIns: number;
@@ -18,14 +23,108 @@ export type Habit = {
 const STORAGE_PREFIX = "habitly.habits.";
 const DEMO_EMAIL = "alex@habitly.app";
 
-const SEED_HABITS: Habit[] = [
-  { id: "1", name: "Drink water", icon: "water_drop", frequency: "daily", reminder: "8:00 AM", streak: 12, completedToday: true, totalCheckIns: 132, completionRate: 90 },
-  { id: "2", name: "Morning run", icon: "directions_run", frequency: "daily", reminder: "7:00 AM", streak: 12, completedToday: false, totalCheckIns: 98, completionRate: 75 },
-  { id: "3", name: "Read 10 pages", icon: "menu_book", frequency: "daily", reminder: null, streak: 12, completedToday: false, totalCheckIns: 80, completionRate: 60 },
-  { id: "4", name: "Meditate", icon: "self_improvement", frequency: "daily", reminder: "9:00 PM", streak: 12, completedToday: true, totalCheckIns: 112, completionRate: 85 },
-];
+function todayStr(d: Date = new Date()): string {
+  return d.toISOString().slice(0, 10);
+}
 
-function loadHabitsFor(email: string | null): Habit[] {
+function addDays(dateStr: string, delta: number): string {
+  const d = new Date(dateStr + "T00:00:00Z");
+  d.setUTCDate(d.getUTCDate() + delta);
+  return todayStr(d);
+}
+
+function daysBetween(fromStr: string, toStr: string): number {
+  const from = new Date(fromStr + "T00:00:00Z").getTime();
+  const to = new Date(toStr + "T00:00:00Z").getTime();
+  return Math.round((to - from) / 86_400_000);
+}
+
+function computeStreak(completedDates: string[]): number {
+  if (completedDates.length === 0) return 0;
+  const set = new Set(completedDates);
+  const today = todayStr();
+  let cursor = set.has(today) ? today : addDays(today, -1);
+  if (!set.has(cursor)) return 0;
+  let streak = 0;
+  while (set.has(cursor)) {
+    streak += 1;
+    cursor = addDays(cursor, -1);
+  }
+  return streak;
+}
+
+function computeCompletionRate(completedDates: string[], createdAt: string): number {
+  const totalDays = Math.max(1, daysBetween(createdAt, todayStr()) + 1);
+  return Math.round((completedDates.length / totalDays) * 100);
+}
+
+function deriveHabit(h: StoredHabit): Habit {
+  const today = todayStr();
+  return {
+    ...h,
+    completedToday: h.completedDates.includes(today),
+    streak: computeStreak(h.completedDates),
+    totalCheckIns: h.completedDates.length,
+    completionRate: computeCompletionRate(h.completedDates, h.createdAt),
+  };
+}
+
+// Seed history for the demo account: a long-running run of check-ins with
+// occasional gaps, so streaks/completion rates come from real dates rather
+// than made-up numbers.
+function seedCompletedDates(daysBack: number, gapEvery: number, endedYesterday: boolean): string[] {
+  const dates: string[] = [];
+  const start = endedYesterday ? 1 : 0;
+  for (let i = daysBack; i >= start; i--) {
+    if (i % gapEvery === 0 && i > 13) continue; // keep the most recent stretch gap-free for a clean streak
+    dates.push(addDays(todayStr(), -i));
+  }
+  return dates;
+}
+
+function seedHabits(): StoredHabit[] {
+  const createdAt = addDays(todayStr(), -150);
+  return [
+    {
+      id: "1",
+      name: "Drink water",
+      icon: "water_drop",
+      frequency: "daily",
+      reminder: "8:00 AM",
+      createdAt,
+      completedDates: seedCompletedDates(150, 10, false),
+    },
+    {
+      id: "2",
+      name: "Morning run",
+      icon: "directions_run",
+      frequency: "daily",
+      reminder: "7:00 AM",
+      createdAt,
+      completedDates: seedCompletedDates(150, 4, true),
+    },
+    {
+      id: "3",
+      name: "Read 10 pages",
+      icon: "menu_book",
+      frequency: "daily",
+      reminder: null,
+      createdAt,
+      completedDates: seedCompletedDates(150, 3, true),
+    },
+    {
+      id: "4",
+      name: "Meditate",
+      icon: "self_improvement",
+      frequency: "daily",
+      reminder: "9:00 PM",
+      createdAt,
+      completedDates: seedCompletedDates(150, 7, false),
+    },
+  ];
+}
+
+function loadHabitsFor(email: string | null): StoredHabit[] {
   if (!email) return [];
   try {
     const raw = localStorage.getItem(STORAGE_PREFIX + email);
@@ -36,7 +135,7 @@ function loadHabitsFor(email: string | null): Habit[] {
   } catch {
     // fall through to default
   }
-  return email === DEMO_EMAIL ? SEED_HABITS : [];
+  return email === DEMO_EMAIL ? seedHabits() : [];
 }
 
 type NewHabitInput = {
@@ -53,36 +152,81 @@ type HabitsContextValue = {
   deleteHabit: (id: string) => void;
   toggleHabit: (id: string) => void;
   getHabit: (id: string) => Habit | undefined;
+  clearAllHabits: () => void;
   stats: {
     currentStreak: number;
     longestStreak: number;
     completionRate: number;
     totalCheckIns: number;
+    weeklyTrend: number[];
   };
 };
 
 const HabitsContext = createContext<HabitsContextValue | null>(null);
 
+const TREND_WEEKS = 10;
+
+function computeWeeklyTrend(habits: Habit[]): number[] {
+  const today = todayStr();
+  const trend: number[] = [];
+  for (let w = TREND_WEEKS - 1; w >= 0; w--) {
+    const weekEnd = addDays(today, -7 * w);
+    let possible = 0;
+    let done = 0;
+    for (let i = 0; i < 7; i++) {
+      const day = addDays(weekEnd, -i);
+      if (day > today) continue;
+      habits.forEach((h) => {
+        if (day >= h.createdAt) {
+          possible += 1;
+          if (h.completedDates.includes(day)) done += 1;
+        }
+      });
+    }
+    trend.push(possible > 0 ? Math.round((done / possible) * 100) : 0);
+  }
+  return trend;
+}
+
 export function HabitsProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const email = user?.email ?? null;
 
-  const [habits, setHabits] = useState<Habit[]>(() => loadHabitsFor(email));
+  const [storedHabits, setStoredHabits] = useState<StoredHabit[]>(() => loadHabitsFor(email));
+  const [tick, setTick] = useState(0);
 
   // reload whenever the signed-in account changes (sign in/out, switch account)
   useEffect(() => {
-    setHabits(loadHabitsFor(email));
+    setStoredHabits(loadHabitsFor(email));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email]);
 
   useEffect(() => {
     if (email) {
-      localStorage.setItem(STORAGE_PREFIX + email, JSON.stringify(habits));
+      localStorage.setItem(STORAGE_PREFIX + email, JSON.stringify(storedHabits));
     }
-  }, [habits, email]);
+  }, [storedHabits, email]);
+
+  // re-derive today's completion / streaks when the tab regains focus, so an
+  // app left open across midnight picks up the new day without a reload
+  useEffect(() => {
+    const onFocus = () => setTick((t) => t + 1);
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onFocus);
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onFocus);
+    };
+  }, []);
+
+  const habits = useMemo(() => {
+    void tick;
+    return storedHabits.map(deriveHabit);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storedHabits, tick]);
 
   const addHabit = (input: NewHabitInput) => {
-    setHabits((prev) => [
+    setStoredHabits((prev) => [
       ...prev,
       {
         id: crypto.randomUUID(),
@@ -90,16 +234,14 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
         icon: input.icon,
         frequency: input.frequency,
         reminder: input.reminder,
-        streak: 0,
-        completedToday: false,
-        totalCheckIns: 0,
-        completionRate: 0,
+        createdAt: todayStr(),
+        completedDates: [],
       },
     ]);
   };
 
   const updateHabit = (id: string, input: NewHabitInput) => {
-    setHabits((prev) =>
+    setStoredHabits((prev) =>
       prev.map((h) =>
         h.id === id
           ? { ...h, name: input.name, icon: input.icon, frequency: input.frequency, reminder: input.reminder }
@@ -109,41 +251,48 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteHabit = (id: string) => {
-    setHabits((prev) => prev.filter((h) => h.id !== id));
+    setStoredHabits((prev) => prev.filter((h) => h.id !== id));
   };
 
   const getHabit = (id: string) => habits.find((h) => h.id === id);
 
   const toggleHabit = (id: string) => {
-    setHabits((prev) =>
-      prev.map((h) =>
-        h.id === id
-          ? {
-              ...h,
-              completedToday: !h.completedToday,
-              streak: !h.completedToday ? h.streak + 1 : Math.max(0, h.streak - 1),
-              totalCheckIns: !h.completedToday ? h.totalCheckIns + 1 : Math.max(0, h.totalCheckIns - 1),
-            }
-          : h
-      )
+    const today = todayStr();
+    setStoredHabits((prev) =>
+      prev.map((h) => {
+        if (h.id !== id) return h;
+        const isDoneToday = h.completedDates.includes(today);
+        const completedDates = isDoneToday
+          ? h.completedDates.filter((d) => d !== today)
+          : [...h.completedDates, today].sort();
+        return { ...h, completedDates };
+      })
     );
+  };
+
+  const clearAllHabits = () => {
+    if (email) localStorage.removeItem(STORAGE_PREFIX + email);
+    setStoredHabits([]);
   };
 
   const stats = useMemo(() => {
     if (habits.length === 0) {
-      return { currentStreak: 0, longestStreak: 0, completionRate: 0, totalCheckIns: 0 };
+      return { currentStreak: 0, longestStreak: 0, completionRate: 0, totalCheckIns: 0, weeklyTrend: new Array(TREND_WEEKS).fill(0) };
     }
     const currentStreak = Math.max(...habits.map((h) => h.streak));
-    const longestStreak = Math.max(currentStreak, ...habits.map((h) => h.streak));
+    const longestStreak = currentStreak;
     const completionRate = Math.round(
       habits.reduce((sum, h) => sum + h.completionRate, 0) / habits.length
     );
     const totalCheckIns = habits.reduce((sum, h) => sum + h.totalCheckIns, 0);
-    return { currentStreak, longestStreak, completionRate, totalCheckIns };
+    const weeklyTrend = computeWeeklyTrend(habits);
+    return { currentStreak, longestStreak, completionRate, totalCheckIns, weeklyTrend };
   }, [habits]);
 
   return (
-    <HabitsContext.Provider value={{ habits, addHabit, updateHabit, deleteHabit, toggleHabit, getHabit, stats }}>
+    <HabitsContext.Provider
+      value={{ habits, addHabit, updateHabit, deleteHabit, toggleHabit, getHabit, clearAllHabits, stats }}
+    >
       {children}
     </HabitsContext.Provider>
   );

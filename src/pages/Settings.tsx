@@ -7,6 +7,7 @@ import Icon from "../components/Icon";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useToast } from "../data/ToastContext";
 import { useAuth } from "../data/AuthContext";
+import { useHabits } from "../data/HabitsContext";
 
 function initialsFor(name: string) {
   const parts = name.trim().split(/\s+/);
@@ -18,6 +19,7 @@ function initialsFor(name: string) {
 
 export default function Settings() {
   const { user, logout, updateProfile } = useAuth();
+  const { clearAllHabits } = useHabits();
   const [name, setName] = useState(user?.name ?? "Alex Kim");
   const [email, setEmail] = useState(user?.email ?? "alex@habitly.app");
   const [darkMode, setDarkMode] = useState(false);
@@ -35,9 +37,14 @@ export default function Settings() {
 
   const handleDeleteAccount = () => {
     setConfirmingDelete(false);
+    clearAllHabits();
     logout();
     showToast("Account deleted", "success");
     navigate("/signin");
+  };
+
+  const handleUpgradeClick = () => {
+    showToast("Pro plan is coming soon", "success");
   };
 
   const handleNameChange = (value: string) => {
@@ -149,9 +156,13 @@ export default function Settings() {
             <p className="font-semibold text-md">Free plan</p>
           </div>
           <p className="text-sm text-text-primary w-[320px]">
-            Up to 5 habits, daily reminders, and 30-day history. Upgrade for unlimited habits and yearly insights.
+            Unlimited habits and daily reminders. Upgrade for calendar history and yearly insights.
           </p>
-          <button type="button" className="flex gap-1 items-center text-accent cursor-pointer hover:underline">
+          <button
+            type="button"
+            onClick={handleUpgradeClick}
+            className="flex gap-1 items-center text-accent cursor-pointer hover:underline"
+          >
             <span className="font-semibold text-sm">Upgrade to Pro</span>
             <Icon name="arrow_forward" style={{ fontSize: 16 }} />
           </button>
