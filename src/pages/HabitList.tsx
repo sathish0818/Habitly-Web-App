@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useHabits, type Frequency } from "../data/HabitsContext";
 import { useToast } from "../data/ToastContext";
 import HabitCard from "../components/HabitCard";
+import HabitRow from "../components/HabitRow";
 import ConfirmDialog from "../components/ConfirmDialog";
 import Button from "../components/Button";
 import Icon from "../components/Icon";
 
 type FilterOption = "all" | Frequency;
+type ViewMode = "card" | "list";
 
 const FILTERS: { value: FilterOption; label: string }[] = [
   { value: "all", label: "All" },
@@ -22,6 +24,7 @@ export default function HabitList() {
   const navigate = useNavigate();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterOption>("all");
+  const [view, setView] = useState<ViewMode>("card");
 
   const doneToday = habits.filter((h) => h.completedToday).length;
   const percentDone = habits.length > 0 ? Math.round((doneToday / habits.length) * 100) : 0;
@@ -84,28 +87,54 @@ export default function HabitList() {
         <div className="flex-1" />
       </div>
 
-      <div className="bg-surface-alt flex items-start p-xs rounded-md">
-        {FILTERS.map((f) => (
-          <button
-            key={f.value}
-            type="button"
-            onClick={() => setFilter(f.value)}
-            className={`flex items-center justify-center px-md py-sm rounded-sm text-sm font-semibold cursor-pointer transition-colors ${
-              filter === f.value
-                ? "bg-surface text-accent shadow-sm"
-                : "text-text-secondary hover:text-text-primary"
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
+      <div className="flex items-center justify-between w-full">
+        <div className="bg-surface-alt flex items-start p-xs rounded-md">
+          {FILTERS.map((f) => (
+            <button
+              key={f.value}
+              type="button"
+              onClick={() => setFilter(f.value)}
+              className={`flex items-center justify-center px-md py-sm rounded-sm text-sm font-semibold cursor-pointer transition-colors ${
+                filter === f.value
+                  ? "bg-surface text-accent shadow-sm"
+                  : "text-text-secondary hover:text-text-primary"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="bg-surface-alt flex items-start p-xs rounded-md">
+          {(
+            [
+              { value: "card", icon: "grid_view", label: "Card view" },
+              { value: "list", icon: "view_list", label: "List view" },
+            ] as const
+          ).map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => setView(opt.value)}
+              aria-label={opt.label}
+              aria-pressed={view === opt.value}
+              className={`flex items-center justify-center size-8 rounded-sm cursor-pointer transition-colors ${
+                view === opt.value
+                  ? "bg-surface text-accent shadow-sm"
+                  : "text-text-secondary hover:text-text-primary"
+              }`}
+            >
+              <Icon name={opt.icon} style={{ fontSize: 18 }} />
+            </button>
+          ))}
+        </div>
       </div>
 
       {filteredHabits.length === 0 ? (
         <div className="bg-surface border border-border rounded-lg flex flex-col items-center justify-center gap-sm p-2xl w-full">
           <p className="text-sm text-text-secondary">No {filter === "all" ? "" : filter} habits yet.</p>
         </div>
-      ) : (
+      ) : view === "card" ? (
         <div className="grid grid-cols-3 gap-lg w-full">
           {filteredHabits.map((habit) => (
             <HabitCard
@@ -114,6 +143,22 @@ export default function HabitList() {
               icon={habit.icon}
               streak={habit.streak}
               checked={habit.completedToday}
+              onToggle={() => toggleHabit(habit.id)}
+              onEdit={() => navigate(`/edit/${habit.id}`)}
+              onDelete={() => setPendingDeleteId(habit.id)}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="bg-surface border border-border rounded-lg flex flex-col items-start px-lg w-full">
+          {filteredHabits.map((habit, i) => (
+            <HabitRow
+              key={habit.id}
+              name={habit.name}
+              icon={habit.icon}
+              streak={habit.streak}
+              checked={habit.completedToday}
+              isLast={i === filteredHabits.length - 1}
               onToggle={() => toggleHabit(habit.id)}
               onEdit={() => navigate(`/edit/${habit.id}`)}
               onDelete={() => setPendingDeleteId(habit.id)}

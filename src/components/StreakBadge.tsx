@@ -2,6 +2,7 @@ import Icon from "./Icon";
 
 type StreakBadgeProps = {
   days: number;
+  className?: string;
 };
 
 function levelFor(days: number): "low" | "medium" | "high" {
@@ -16,10 +17,10 @@ const LEVEL_CLASSES: Record<ReturnType<typeof levelFor>, string> = {
   high: "bg-accent text-accent-on",
 };
 
-export default function StreakBadge({ days }: StreakBadgeProps) {
+export default function StreakBadge({ days, className = "" }: StreakBadgeProps) {
   const level = levelFor(days);
   return (
-    <div className={`self-start flex items-center gap-xs px-sm py-xs rounded-lg shrink-0 ${LEVEL_CLASSES[level]}`}>
+    <div className={`flex items-center gap-xs px-sm py-xs rounded-lg shrink-0 ${LEVEL_CLASSES[level]} ${className}`}>
       <Icon name="local_fire_department" style={{ fontSize: 14 }} />
       <span className="text-xs font-bold">{days}</span>
     </div>

@@ -31,7 +31,7 @@ export default function HabitCard({ name, icon, streak, checked, onToggle, onEdi
         >
           {name}
         </p>
-        <StreakBadge days={streak} />
+        <StreakBadge days={streak} className="self-start" />
       </div>
       <CardMenu onEdit={onEdit} onDelete={onDelete} />
       <Checkbox checked={checked} onChange={onToggle} aria-label={`Mark ${name} as done`} />
