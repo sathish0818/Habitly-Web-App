@@ -7,6 +7,8 @@ type TrendChartProps = {
 const W = 1000;
 const H = 140;
 const ORIGIN_X = 40;
+const TOP_PAD = 16;
+const BOTTOM_PAD = 24;
 
 export default function TrendChart({ data, startLabel, endLabel }: TrendChartProps) {
   const plotW = W - ORIGIN_X;
@@ -20,7 +22,11 @@ export default function TrendChart({ data, startLabel, endLabel }: TrendChartPro
 
   return (
     <div className="w-full">
-      <svg viewBox={`0 0 ${W} ${H + 24}`} className="w-full" preserveAspectRatio="none">
+      <svg
+        viewBox={`0 ${-TOP_PAD} ${W} ${H + BOTTOM_PAD + TOP_PAD}`}
+        className="w-full"
+        preserveAspectRatio="none"
+      >
         {[0, 50, 100].map((pct) => (
           <g key={pct}>
             <line
