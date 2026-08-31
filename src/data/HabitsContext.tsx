@@ -124,13 +124,47 @@ function seedHabits(): StoredHabit[] {
   ];
 }
 
+// Migrates a habit persisted before completedDates existed (it had
+// completedToday/streak/totalCheckIns fields instead) into the current
+// shape, so old localStorage data doesn't crash the app on load.
+function normalizeHabit(raw: unknown): StoredHabit | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Record<string, unknown>;
+  if (Array.isArray(r.completedDates) && typeof r.createdAt === "string") {
+    return r as unknown as StoredHabit;
+  }
+  if (typeof r.id !== "string" || typeof r.name !== "string") return null;
+
+  const today = todayStr();
+  const legacyStreak = typeof r.streak === "number" ? r.streak : 0;
+  const wasCompletedToday = Boolean(r.completedToday);
+  const completedDates: string[] = [];
+  for (let i = 0; i < legacyStreak; i++) {
+    completedDates.push(addDays(today, wasCompletedToday ? -i : -(i + 1)));
+  }
+  const legacyTotal = typeof r.totalCheckIns === "number" ? r.totalCheckIns : legacyStreak;
+
+  return {
+    id: r.id,
+    name: r.name,
+    icon: typeof r.icon === "string" ? r.icon : "star",
+    frequency: r.frequency === "weekly" || r.frequency === "custom" ? r.frequency : "daily",
+    reminder: typeof r.reminder === "string" ? r.reminder : null,
+    createdAt: addDays(today, -Math.max(legacyStreak, legacyTotal, 1)),
+    completedDates,
+  };
+}
+
 function loadHabitsFor(email: string | null): StoredHabit[] {
   if (!email) return [];
   try {
     const raw = localStorage.getItem(STORAGE_PREFIX + email);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed)) {
+        const normalized = parsed.map(normalizeHabit).filter((h): h is StoredHabit => h !== null);
+        return normalized;
+      }
     }
   } catch {
     // fall through to default
