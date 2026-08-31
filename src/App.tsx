@@ -4,6 +4,7 @@ import { HabitsProvider } from "./data/HabitsContext";
 import { SidebarProvider } from "./data/SidebarContext";
 import { ToastProvider } from "./data/ToastContext";
 import Layout from "./components/Layout";
+import RequireAuth from "./components/RequireAuth";
 import Home from "./pages/Home";
 import AddHabit from "./pages/AddHabit";
 import EditHabit from "./pages/EditHabit";
@@ -20,14 +21,16 @@ export default function App() {
           <SidebarProvider>
             <BrowserRouter>
               <Routes>
-                <Route path="/" element={<Home />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
-                <Route element={<Layout />}>
-                  <Route path="/add" element={<AddHabit />} />
-                  <Route path="/edit/:id" element={<EditHabit />} />
-                  <Route path="/stats" element={<StreakStats />} />
-                  <Route path="/settings" element={<Settings />} />
+                <Route element={<RequireAuth />}>
+                  <Route path="/" element={<Home />} />
+                  <Route element={<Layout />}>
+                    <Route path="/add" element={<AddHabit />} />
+                    <Route path="/edit/:id" element={<EditHabit />} />
+                    <Route path="/stats" element={<StreakStats />} />
+                    <Route path="/settings" element={<Settings />} />
+                  </Route>
                 </Route>
               </Routes>
             </BrowserRouter>
