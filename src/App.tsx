@@ -1,0 +1,39 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./data/AuthContext";
+import { HabitsProvider } from "./data/HabitsContext";
+import { SidebarProvider } from "./data/SidebarContext";
+import { ToastProvider } from "./data/ToastContext";
+import Layout from "./components/Layout";
+import Home from "./pages/Home";
+import AddHabit from "./pages/AddHabit";
+import EditHabit from "./pages/EditHabit";
+import StreakStats from "./pages/StreakStats";
+import Settings from "./pages/Settings";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
+
+export default function App() {
+  return (
+    <ToastProvider>
+      <AuthProvider>
+        <HabitsProvider>
+          <SidebarProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/signin" element={<SignIn />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route element={<Layout />}>
+                  <Route path="/add" element={<AddHabit />} />
+                  <Route path="/edit/:id" element={<EditHabit />} />
+                  <Route path="/stats" element={<StreakStats />} />
+                  <Route path="/settings" element={<Settings />} />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </SidebarProvider>
+        </HabitsProvider>
+      </AuthProvider>
+    </ToastProvider>
+  );
+}
