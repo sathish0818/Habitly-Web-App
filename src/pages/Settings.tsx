@@ -57,11 +57,19 @@ export default function Settings() {
     if (trimmed && trimmed !== user?.email) updateProfile({ email: trimmed });
   };
 
+  const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+
   const handlePhotoSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
       showToast("Please choose an image file", "error");
+      e.target.value = "";
+      return;
+    }
+    if (file.size > MAX_PHOTO_BYTES) {
+      showToast("Image must be under 5MB", "error");
+      e.target.value = "";
       return;
     }
     const reader = new FileReader();
