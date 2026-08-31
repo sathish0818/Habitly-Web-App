@@ -1,7 +1,6 @@
+import { Navigate } from "react-router-dom";
 import { useHabits } from "../data/HabitsContext";
-import Layout from "../components/Layout";
 import EmptyState from "./EmptyState";
-import HabitList from "./HabitList";
 
 export default function Home() {
   const { habits } = useHabits();
@@ -10,9 +9,5 @@ export default function Home() {
     return <EmptyState />;
   }
 
-  return (
-    <Layout>
-      <HabitList />
-    </Layout>
-  );
+  return <Navigate to="/stats" replace />;
 }

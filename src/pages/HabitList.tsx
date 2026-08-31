@@ -1,20 +1,35 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useHabits } from "../data/HabitsContext";
+import { useHabits, type Frequency } from "../data/HabitsContext";
 import { useToast } from "../data/ToastContext";
 import HabitCard from "../components/HabitCard";
 import ConfirmDialog from "../components/ConfirmDialog";
 import Button from "../components/Button";
 import Icon from "../components/Icon";
 
+type FilterOption = "all" | Frequency;
+
+const FILTERS: { value: FilterOption; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "daily", label: "Daily" },
+  { value: "weekly", label: "Weekly" },
+  { value: "custom", label: "Custom" },
+];
+
 export default function HabitList() {
   const { habits, toggleHabit, deleteHabit, stats } = useHabits();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [filter, setFilter] = useState<FilterOption>("all");
 
   const doneToday = habits.filter((h) => h.completedToday).length;
   const percentDone = habits.length > 0 ? Math.round((doneToday / habits.length) * 100) : 0;
+
+  const filteredHabits = useMemo(
+    () => (filter === "all" ? habits : habits.filter((h) => h.frequency === filter)),
+    [habits, filter]
+  );
 
   const pendingHabit = habits.find((h) => h.id === pendingDeleteId);
 
@@ -69,20 +84,43 @@ export default function HabitList() {
         <div className="flex-1" />
       </div>
 
-      <div className="grid grid-cols-3 gap-lg w-full">
-        {habits.map((habit) => (
-          <HabitCard
-            key={habit.id}
-            name={habit.name}
-            icon={habit.icon}
-            streak={habit.streak}
-            checked={habit.completedToday}
-            onToggle={() => toggleHabit(habit.id)}
-            onEdit={() => navigate(`/edit/${habit.id}`)}
-            onDelete={() => setPendingDeleteId(habit.id)}
-          />
+      <div className="bg-surface-alt flex items-start p-xs rounded-md">
+        {FILTERS.map((f) => (
+          <button
+            key={f.value}
+            type="button"
+            onClick={() => setFilter(f.value)}
+            className={`flex items-center justify-center px-md py-sm rounded-sm text-sm font-semibold cursor-pointer transition-colors ${
+              filter === f.value
+                ? "bg-surface text-accent shadow-sm"
+                : "text-text-secondary hover:text-text-primary"
+            }`}
+          >
+            {f.label}
+          </button>
         ))}
       </div>
+
+      {filteredHabits.length === 0 ? (
+        <div className="bg-surface border border-border rounded-lg flex flex-col items-center justify-center gap-sm p-2xl w-full">
+          <p className="text-sm text-text-secondary">No {filter === "all" ? "" : filter} habits yet.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-lg w-full">
+          {filteredHabits.map((habit) => (
+            <HabitCard
+              key={habit.id}
+              name={habit.name}
+              icon={habit.icon}
+              streak={habit.streak}
+              checked={habit.completedToday}
+              onToggle={() => toggleHabit(habit.id)}
+              onEdit={() => navigate(`/edit/${habit.id}`)}
+              onDelete={() => setPendingDeleteId(habit.id)}
+            />
+          ))}
+        </div>
+      )}
 
       {pendingHabit && (
         <ConfirmDialog

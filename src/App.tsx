@@ -6,6 +6,7 @@ import { ToastProvider } from "./data/ToastContext";
 import Layout from "./components/Layout";
 import RequireAuth from "./components/RequireAuth";
 import Home from "./pages/Home";
+import HabitList from "./pages/HabitList";
 import AddHabit from "./pages/AddHabit";
 import EditHabit from "./pages/EditHabit";
 import StreakStats from "./pages/StreakStats";
@@ -26,6 +27,7 @@ export default function App() {
                 <Route element={<RequireAuth />}>
                   <Route path="/" element={<Home />} />
                   <Route element={<Layout />}>
+                    <Route path="/habits" element={<HabitList />} />
                     <Route path="/add" element={<AddHabit />} />
                     <Route path="/edit/:id" element={<EditHabit />} />
                     <Route path="/stats" element={<StreakStats />} />

@@ -48,7 +48,7 @@ export default function HabitForm({ mode, initialValues, onSubmit }: HabitFormPr
     <div className="flex gap-2xl p-2xl items-start w-full">
       <div className="flex flex-col gap-xl items-start flex-1 min-w-0">
         <div className="flex gap-sm items-start text-sm">
-          <Link to="/" className="text-text-secondary hover:text-text-primary">Habits</Link>
+          <Link to="/habits" className="text-text-secondary hover:text-text-primary">Habits</Link>
           <span className="text-text-secondary">/</span>
           <span className="font-semibold text-text-primary">{isEdit ? "Edit habit" : "Add new"}</span>
         </div>
@@ -104,7 +104,7 @@ export default function HabitForm({ mode, initialValues, onSubmit }: HabitFormPr
         </div>
 
         <div className="flex gap-3 items-start">
-          <Button size="md" variant="secondary" onClick={() => navigate("/")}>
+          <Button size="md" variant="secondary" onClick={() => navigate("/habits")}>
             Cancel
           </Button>
           <Button size="md" variant="primary" onClick={handleSubmit} disabled={!name.trim()}>

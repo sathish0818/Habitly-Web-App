@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import Toggle from "../components/Toggle";
@@ -8,8 +8,16 @@ import ConfirmDialog from "../components/ConfirmDialog";
 import { useToast } from "../data/ToastContext";
 import { useAuth } from "../data/AuthContext";
 
+function initialsFor(name: string) {
+  const parts = name.trim().split(/\s+/);
+  return parts
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
 export default function Settings() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateProfile } = useAuth();
   const [name, setName] = useState(user?.name ?? "Alex Kim");
   const [email, setEmail] = useState(user?.email ?? "alex@habitly.app");
   const [darkMode, setDarkMode] = useState(false);
@@ -18,6 +26,7 @@ export default function Settings() {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSignOut = () => {
     logout();
@@ -31,6 +40,32 @@ export default function Settings() {
     navigate("/signin");
   };
 
+  const handleNameChange = (value: string) => {
+    setName(value);
+    updateProfile({ name: value });
+  };
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    updateProfile({ email: value });
+  };
+
+  const handlePhotoSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      showToast("Please choose an image file", "error");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateProfile({ avatarUrl: reader.result as string });
+      showToast("Profile picture updated", "success");
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
   return (
     <div className="flex gap-xl items-start pt-lg px-2xl w-full">
       <div className="flex flex-col gap-lg items-start w-[680px] shrink-0">
@@ -38,14 +73,43 @@ export default function Settings() {
 
         <div className="flex flex-col gap-md items-start w-full">
           <p className="font-semibold text-lg text-text-primary">Profile</p>
-          <div className="bg-surface border border-border rounded-lg flex gap-lg items-start px-lg py-[18px] w-full">
-            <div className="flex flex-col gap-sm items-start flex-1">
-              <p className="font-semibold text-sm text-text-primary">Name</p>
-              <Input value={name} onChange={(e) => setName(e.target.value)} />
+          <div className="bg-surface border border-border rounded-lg flex flex-col gap-lg items-start px-lg py-[18px] w-full">
+            <div className="flex items-center gap-md">
+              <div className="bg-accent-subtle rounded-full size-16 flex items-center justify-center shrink-0 overflow-hidden">
+                {user?.avatarUrl ? (
+                  <img src={user.avatarUrl} alt={name} className="size-full object-cover" />
+                ) : (
+                  <span className="text-lg font-semibold text-accent">{initialsFor(name)}</span>
+                )}
+              </div>
+              <div className="flex flex-col gap-1.5 items-start">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  Change photo
+                </Button>
+                <p className="text-xs text-text-secondary">JPG or PNG, up to 5MB.</p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handlePhotoSelected}
+                />
+              </div>
             </div>
-            <div className="flex flex-col gap-sm items-start flex-1">
-              <p className="font-semibold text-sm text-text-primary">Email</p>
-              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <div className="flex gap-lg items-start w-full">
+              <div className="flex flex-col gap-sm items-start flex-1">
+                <p className="font-semibold text-sm text-text-primary">Name</p>
+                <Input value={name} onChange={(e) => handleNameChange(e.target.value)} />
+              </div>
+              <div className="flex flex-col gap-sm items-start flex-1">
+                <p className="font-semibold text-sm text-text-primary">Email</p>
+                <Input type="email" value={email} onChange={(e) => handleEmailChange(e.target.value)} />
+              </div>
             </div>
           </div>
         </div>

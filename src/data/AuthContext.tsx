@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 export type User = {
   name: string;
   email: string;
+  avatarUrl?: string;
 };
 
 const STORAGE_KEY = "habitly.user";
@@ -32,6 +33,7 @@ type AuthContextValue = {
   signup: (name: string, email: string) => void;
   loginWithGoogle: (profile: User) => void;
   logout: () => void;
+  updateProfile: (updates: Partial<Pick<User, "name" | "email" | "avatarUrl">>) => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -61,8 +63,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => setUser(null);
 
+  const updateProfile = (updates: Partial<Pick<User, "name" | "email" | "avatarUrl">>) => {
+    setUser((prev) => (prev ? { ...prev, ...updates } : prev));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, signup, loginWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, login, signup, loginWithGoogle, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

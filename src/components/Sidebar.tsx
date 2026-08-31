@@ -18,8 +18,8 @@ type NavItemDef = {
 };
 
 const NAV_ITEMS: NavItemDef[] = [
-  { to: "/", icon: "task_alt", label: "Habits" },
   { to: "/stats", icon: "bar_chart", label: "Stats" },
+  { to: "/habits", icon: "task_alt", label: "Habits" },
   { to: "/settings", icon: "settings", label: "Settings" },
 ];
 
@@ -70,7 +70,6 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
           <NavLink
             key={item.to}
             to={item.to}
-            end={item.to === "/"}
             className={({ isActive }) =>
               `flex items-center gap-3 rounded-sm transition-colors ${
                 collapsed ? "justify-center h-11 w-10" : "h-11 w-full px-3 py-2.5"
@@ -94,8 +93,12 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <div className={`bg-border ${collapsed ? "h-px w-10" : "h-px w-full"}`} />
 
       <div className={`flex items-center gap-2.5 pt-3 ${collapsed ? "justify-center" : ""}`}>
-        <div className="bg-accent-subtle rounded-full size-9 flex items-center justify-center shrink-0">
-          <span className="text-xs font-semibold text-accent">{initialsFor(displayName)}</span>
+        <div className="bg-accent-subtle rounded-full size-9 flex items-center justify-center shrink-0 overflow-hidden">
+          {user?.avatarUrl ? (
+            <img src={user.avatarUrl} alt={displayName} className="size-full object-cover" />
+          ) : (
+            <span className="text-xs font-semibold text-accent">{initialsFor(displayName)}</span>
+          )}
         </div>
         {!collapsed && (
           <div className="flex flex-col gap-0.5 min-w-0">

@@ -1,16 +1,24 @@
+import { useNavigate } from "react-router-dom";
 import { useHabits } from "../data/HabitsContext";
 import TrendChart from "../components/TrendChart";
+import Button from "../components/Button";
 import Icon from "../components/Icon";
 
 const WEEKLY_TREND = [42, 47, 52, 50, 58, 64, 61, 71, 78, 87];
 
 export default function StreakStats() {
   const { habits, stats } = useHabits();
+  const navigate = useNavigate();
   const ranked = [...habits].sort((a, b) => b.completionRate - a.completionRate);
 
   return (
     <div className="flex flex-col gap-lg items-start pt-2xl px-2xl w-full">
-      <p className="font-bold text-2xl text-text-primary">Streak &amp; Stats</p>
+      <div className="flex items-center w-full">
+        <p className="flex-1 font-bold text-2xl text-text-primary">Streak &amp; Stats</p>
+        <Button size="sm" onClick={() => navigate("/add")}>
+          + Add habit
+        </Button>
+      </div>
 
       <div className="bg-surface border border-border rounded-lg flex gap-xl items-center p-lg w-full">
         <div className="flex flex-col gap-xs items-start shrink-0">
