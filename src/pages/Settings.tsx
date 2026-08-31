@@ -82,8 +82,8 @@ export default function Settings() {
   };
 
   return (
-    <div className="flex gap-xl items-start pt-lg px-2xl w-full">
-      <div className="flex flex-col gap-lg items-start w-[680px] shrink-0">
+    <div className="flex flex-col md:flex-row gap-xl items-start pt-lg px-md md:px-2xl w-full">
+      <div className="flex flex-col gap-lg items-start w-full md:w-[680px] md:shrink-0">
         <p className="font-bold text-2xl text-text-primary">Settings</p>
 
         <div className="flex flex-col gap-md items-start w-full">
@@ -116,12 +116,12 @@ export default function Settings() {
                 />
               </div>
             </div>
-            <div className="flex gap-lg items-start w-full">
-              <div className="flex flex-col gap-sm items-start flex-1">
+            <div className="flex flex-col sm:flex-row gap-lg items-start w-full">
+              <div className="flex flex-col gap-sm items-start flex-1 w-full">
                 <p className="font-semibold text-sm text-text-primary">Name</p>
                 <Input value={name} onChange={(e) => setName(e.target.value)} onBlur={commitName} />
               </div>
-              <div className="flex flex-col gap-sm items-start flex-1">
+              <div className="flex flex-col gap-sm items-start flex-1 w-full">
                 <p className="font-semibold text-sm text-text-primary">Email</p>
                 <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} onBlur={commitEmail} />
               </div>
@@ -157,13 +157,13 @@ export default function Settings() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-lg items-start flex-1 min-w-0 pt-[43px]">
-        <div className="bg-surface border border-border rounded-lg flex flex-col gap-3 items-start p-lg w-[360px]">
+      <div className="flex flex-col gap-lg items-start flex-1 min-w-0 w-full md:pt-[43px]">
+        <div className="bg-surface border border-border rounded-lg flex flex-col gap-3 items-start p-lg w-full md:max-w-[360px]">
           <div className="flex gap-sm items-center text-accent">
             <Icon name="workspace_premium" style={{ fontSize: 20 }} />
             <p className="font-semibold text-md">Free plan</p>
           </div>
-          <p className="text-sm text-text-primary w-[320px]">
+          <p className="text-sm text-text-primary w-full md:max-w-[320px]">
             Unlimited habits and daily reminders. Upgrade for calendar history and yearly insights.
           </p>
           <button
@@ -176,7 +176,7 @@ export default function Settings() {
           </button>
         </div>
 
-        <div className="flex flex-col gap-md items-start w-[360px]">
+        <div className="flex flex-col gap-md items-start w-full md:max-w-[360px]">
           <p className="font-semibold text-lg text-text-primary">Account</p>
           <div className="bg-surface border border-border rounded-lg flex flex-col gap-sm items-start px-lg py-[18px] w-full">
             <Button variant="secondary" size="md" onClick={handleSignOut}>

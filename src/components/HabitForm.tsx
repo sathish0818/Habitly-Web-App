@@ -45,8 +45,8 @@ export default function HabitForm({ mode, initialValues, onSubmit }: HabitFormPr
   };
 
   return (
-    <div className="flex gap-2xl p-2xl items-start w-full">
-      <div className="flex flex-col gap-xl items-start flex-1 min-w-0">
+    <div className="flex flex-col md:flex-row gap-2xl p-md md:p-2xl items-start w-full">
+      <div className="flex flex-col gap-xl items-start flex-1 min-w-0 w-full">
         <div className="flex gap-sm items-start text-sm">
           <Link to="/habits" className="text-text-secondary hover:text-text-primary">Habits</Link>
           <span className="text-text-secondary">/</span>
@@ -85,9 +85,9 @@ export default function HabitForm({ mode, initialValues, onSubmit }: HabitFormPr
           </div>
         </div>
 
-        <div className="flex flex-col gap-sm items-start">
+        <div className="flex flex-col gap-sm items-start w-full">
           <p className="font-semibold text-sm text-text-primary">Icon</p>
-          <div className="flex gap-sm items-start">
+          <div className="flex flex-wrap gap-sm items-start">
             {ICON_OPTIONS.map((opt) => (
               <IconSwatch key={opt} icon={opt} selected={icon === opt} onClick={() => setIcon(opt)} />
             ))}
@@ -113,9 +113,9 @@ export default function HabitForm({ mode, initialValues, onSubmit }: HabitFormPr
         </div>
       </div>
 
-      <div className="flex flex-col gap-md items-center flex-1 min-w-0">
+      <div className="flex flex-col gap-md items-center flex-1 min-w-0 w-full">
         <p className="font-semibold text-xs text-text-secondary">LIVE PREVIEW</p>
-        <div className="bg-surface border border-border rounded-lg flex gap-md items-center p-md w-[360px]">
+        <div className="bg-surface border border-border rounded-lg flex gap-md items-center p-md w-full max-w-[360px]">
           <div className="bg-accent-subtle rounded-md size-12 flex items-center justify-center shrink-0">
             <Icon name={icon} className="text-accent" style={{ fontSize: 20 }} />
           </div>
@@ -128,10 +128,10 @@ export default function HabitForm({ mode, initialValues, onSubmit }: HabitFormPr
           </div>
           <div className="bg-surface border-[1.5px] border-border rounded-sm size-6 shrink-0" />
         </div>
-        <p className="text-sm text-text-secondary text-center w-[320px]">
+        <p className="text-sm text-text-secondary text-center w-full max-w-[320px]">
           This is how your habit will appear in the list. Fill in the form to see it update.
         </p>
-        <div className="bg-accent-subtle rounded-lg flex flex-col gap-3 items-start p-lg w-[360px]">
+        <div className="bg-accent-subtle rounded-lg flex flex-col gap-3 items-start p-lg w-full max-w-[360px]">
           <div className="flex gap-sm items-center text-accent">
             <Icon name="lightbulb" style={{ fontSize: 18 }} />
             <p className="font-semibold text-sm">Tip</p>

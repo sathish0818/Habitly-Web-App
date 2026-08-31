@@ -16,9 +16,9 @@ export default function ConfirmDialog({
   onCancel,
 }: ConfirmDialogProps) {
   return (
-    <div className="fixed inset-0 bg-text-primary/40 flex items-center justify-center z-50" onClick={onCancel}>
+    <div className="fixed inset-0 bg-text-primary/40 flex items-center justify-center z-50 px-lg" onClick={onCancel}>
       <div
-        className="bg-surface rounded-lg p-lg w-[360px] flex flex-col gap-md items-start"
+        className="bg-surface rounded-lg p-lg w-[360px] max-w-full flex flex-col gap-md items-start"
         onClick={(e) => e.stopPropagation()}
         role="alertdialog"
         aria-modal="true"

@@ -33,24 +33,24 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className="fixed bottom-lg right-lg flex flex-col gap-sm z-50 items-end">
+      <div className="fixed bottom-24 md:bottom-lg left-lg right-lg md:left-auto flex flex-col gap-sm z-50 items-stretch md:items-end">
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`flex items-center gap-3 bg-surface border rounded-md shadow-lg py-md px-lg ${
+            className={`flex items-center gap-3 bg-surface border rounded-md shadow-lg py-md px-lg max-w-full md:max-w-md ${
               toast.type === "error" ? "border-error" : "border-success-text"
             }`}
             role="status"
           >
             <span
-              className={`material-symbols-rounded ${
+              className={`material-symbols-rounded shrink-0 ${
                 toast.type === "error" ? "text-error" : "text-success-text"
               }`}
               style={{ fontSize: 20 }}
             >
               {toast.type === "error" ? "error" : "check_circle"}
             </span>
-            <span className="text-sm font-semibold text-text-primary whitespace-nowrap">
+            <span className="text-sm font-semibold text-text-primary flex-1 min-w-0">
               {toast.message}
             </span>
             <button

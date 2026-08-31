@@ -35,7 +35,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
   return (
     <aside
-      className={`h-screen shrink-0 bg-surface border-r border-border flex flex-col gap-xs pt-xl pb-lg px-lg transition-[width] duration-150 ${
+      className={`hidden md:flex h-screen shrink-0 bg-surface border-r border-border flex-col gap-xs pt-xl pb-lg px-lg transition-[width] duration-150 ${
         collapsed ? "w-20" : "w-60"
       }`}
     >

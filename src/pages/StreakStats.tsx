@@ -26,15 +26,15 @@ export default function StreakStats() {
   const quarterLabel = `${sinceWeekOne >= 0 ? "+" : ""}${sinceWeekOne}% this quarter`;
 
   return (
-    <div className="flex flex-col gap-lg items-start pt-2xl px-2xl w-full">
+    <div className="flex flex-col gap-lg items-start pt-lg md:pt-2xl px-md md:px-2xl w-full">
       <div className="flex items-center w-full">
-        <p className="flex-1 font-bold text-2xl text-text-primary">Streak &amp; Stats</p>
+        <p className="flex-1 font-bold text-xl md:text-2xl text-text-primary">Streak &amp; Stats</p>
         <Button size="sm" onClick={() => navigate("/add")}>
           + Add habit
         </Button>
       </div>
 
-      <div className="bg-surface border border-border rounded-lg flex gap-xl items-center p-lg w-full">
+      <div className="bg-surface border border-border rounded-lg flex flex-col sm:flex-row gap-lg sm:gap-xl sm:items-center p-lg w-full">
         <div className="flex flex-col gap-xs items-start shrink-0">
           <p className="text-sm text-text-secondary">Current streak</p>
           <div className="flex gap-sm items-center">
@@ -54,24 +54,24 @@ export default function StreakStats() {
           </div>
         </div>
 
-        <div className="bg-border h-14 w-px shrink-0" />
+        <div className="bg-border h-px w-full sm:h-14 sm:w-px shrink-0" />
 
-        <div className="flex flex-1 items-center justify-between gap-2xl pl-xl min-w-0">
-          <div className="flex flex-col gap-xs items-start w-[150px]">
+        <div className="flex flex-1 flex-wrap items-center justify-between gap-lg sm:gap-2xl sm:pl-xl min-w-0">
+          <div className="flex flex-col gap-xs items-start w-[45%] sm:w-[150px]">
             <p className="text-sm text-text-secondary">Longest streak</p>
             <div className="flex gap-0.5 items-baseline">
               <p className="font-semibold text-xl text-text-primary">{stats.longestStreak}</p>
               <p className="text-sm text-text-secondary">days</p>
             </div>
           </div>
-          <div className="flex flex-col gap-xs items-start w-[150px]">
+          <div className="flex flex-col gap-xs items-start w-[45%] sm:w-[150px]">
             <p className="text-sm text-text-secondary">Completion rate</p>
             <div className="flex gap-0.5 items-baseline">
               <p className="font-semibold text-xl text-text-primary">{stats.completionRate}</p>
               <p className="text-sm text-text-secondary">%</p>
             </div>
           </div>
-          <div className="flex flex-col gap-xs items-start w-[150px]">
+          <div className="flex flex-col gap-xs items-start w-[45%] sm:w-[150px]">
             <p className="text-sm text-text-secondary">Total check-ins</p>
             <p className="font-semibold text-xl text-text-primary">{stats.totalCheckIns}</p>
           </div>
@@ -79,13 +79,13 @@ export default function StreakStats() {
       </div>
 
       <div className="bg-surface border border-border rounded-lg flex flex-col gap-5 items-start p-lg w-full">
-        <div className="flex items-center justify-between w-full">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-sm w-full">
           <div className="flex flex-col gap-0.5 items-start">
             <p className="font-semibold text-md text-text-primary">Completion rate — last 10 weeks</p>
             <p className="text-xs text-text-secondary">{sinceWeekOneLabel}</p>
           </div>
           <div
-            className={`flex gap-xs items-center px-sm py-xs rounded-sm shrink-0 ${
+            className={`flex gap-xs items-center px-sm py-xs rounded-sm shrink-0 self-start ${
               sinceWeekOne >= 0 ? "bg-success-text/10" : "bg-error/10"
             }`}
           >
@@ -112,17 +112,17 @@ export default function StreakStats() {
                 i > 0 ? "border-t border-border" : ""
               }`}
             >
-              <p className="text-sm font-medium text-text-secondary w-4">{i + 1}</p>
-              <Icon name={habit.icon} className="text-accent" style={{ fontSize: 20 }} />
+              <p className="text-sm font-medium text-text-secondary w-4 shrink-0">{i + 1}</p>
+              <Icon name={habit.icon} className="text-accent shrink-0" style={{ fontSize: 20 }} />
               <p className="flex-1 min-w-0 text-sm font-medium text-text-primary truncate">{habit.name}</p>
-              <div className="bg-surface-alt rounded-sm h-1 w-[120px] shrink-0">
+              <div className="hidden sm:block bg-surface-alt rounded-sm h-1 w-[120px] shrink-0">
                 <div
                   className="bg-accent rounded-sm h-1"
                   style={{ width: `${habit.completionRate}%` }}
                 />
               </div>
-              <p className="font-semibold text-md text-text-primary w-11 text-right">{habit.completionRate}%</p>
-              <p className="text-xs text-text-secondary w-[90px] text-right">{habit.streak} day streak</p>
+              <p className="font-semibold text-md text-text-primary w-11 text-right shrink-0">{habit.completionRate}%</p>
+              <p className="hidden sm:block text-xs text-text-secondary w-[90px] text-right shrink-0">{habit.streak} day streak</p>
             </div>
           ))}
         </div>

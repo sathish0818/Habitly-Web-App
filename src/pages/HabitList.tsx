@@ -44,15 +44,15 @@ export default function HabitList() {
   };
 
   return (
-    <div className="flex flex-col gap-lg items-start pt-2xl px-2xl w-full">
-      <div className="flex items-center w-full h-[52px]">
-        <p className="flex-1 font-bold text-2xl text-text-primary">My Habits</p>
+    <div className="flex flex-col gap-lg items-start pt-lg md:pt-2xl px-md md:px-2xl w-full">
+      <div className="flex items-center w-full">
+        <p className="flex-1 font-bold text-xl md:text-2xl text-text-primary">My Habits</p>
         <Button size="sm" onClick={() => navigate("/add")}>
           + Add habit
         </Button>
       </div>
 
-      <div className="bg-surface border border-border rounded-lg flex gap-xl items-center p-lg w-full">
+      <div className="bg-surface border border-border rounded-lg flex flex-wrap gap-lg md:gap-xl items-center p-lg w-full">
         <div className="flex gap-md items-center">
           <div className="bg-accent-subtle border-4 border-accent rounded-full size-14 flex items-center justify-center shrink-0">
             <p className="font-bold text-sm text-accent">{percentDone}%</p>
@@ -84,17 +84,17 @@ export default function HabitList() {
             <p className="text-xs text-text-secondary">active habits</p>
           </div>
         </div>
-        <div className="flex-1" />
+        <div className="flex-1 hidden md:block" />
       </div>
 
-      <div className="flex items-center justify-between w-full">
-        <div className="bg-surface-alt flex items-start p-xs rounded-md">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-sm w-full">
+        <div className="bg-surface-alt flex items-start p-xs rounded-md overflow-x-auto">
           {FILTERS.map((f) => (
             <button
               key={f.value}
               type="button"
               onClick={() => setFilter(f.value)}
-              className={`flex items-center justify-center px-md py-sm rounded-sm text-sm font-semibold cursor-pointer transition-colors ${
+              className={`flex items-center justify-center px-md py-sm rounded-sm text-sm font-semibold cursor-pointer transition-colors shrink-0 whitespace-nowrap ${
                 filter === f.value
                   ? "bg-surface text-accent shadow-sm"
                   : "text-text-secondary hover:text-text-primary"
@@ -105,7 +105,7 @@ export default function HabitList() {
           ))}
         </div>
 
-        <div className="bg-surface-alt flex items-start p-xs rounded-md">
+        <div className="bg-surface-alt flex items-start p-xs rounded-md shrink-0 self-start sm:self-auto">
           {(
             [
               { value: "card", icon: "grid_view", label: "Card view" },
@@ -135,7 +135,7 @@ export default function HabitList() {
           <p className="text-sm text-text-secondary">No {filter === "all" ? "" : filter} habits yet.</p>
         </div>
       ) : view === "card" ? (
-        <div className="grid grid-cols-3 gap-lg w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-lg w-full">
           {filteredHabits.map((habit) => (
             <HabitCard
               key={habit.id}
