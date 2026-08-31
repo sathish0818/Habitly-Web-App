@@ -47,14 +47,14 @@ export default function Settings() {
     showToast("Pro plan is coming soon", "success");
   };
 
-  const handleNameChange = (value: string) => {
-    setName(value);
-    updateProfile({ name: value });
+  const commitName = () => {
+    const trimmed = name.trim();
+    if (trimmed && trimmed !== user?.name) updateProfile({ name: trimmed });
   };
 
-  const handleEmailChange = (value: string) => {
-    setEmail(value);
-    updateProfile({ email: value });
+  const commitEmail = () => {
+    const trimmed = email.trim();
+    if (trimmed && trimmed !== user?.email) updateProfile({ email: trimmed });
   };
 
   const handlePhotoSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,11 +111,11 @@ export default function Settings() {
             <div className="flex gap-lg items-start w-full">
               <div className="flex flex-col gap-sm items-start flex-1">
                 <p className="font-semibold text-sm text-text-primary">Name</p>
-                <Input value={name} onChange={(e) => handleNameChange(e.target.value)} />
+                <Input value={name} onChange={(e) => setName(e.target.value)} onBlur={commitName} />
               </div>
               <div className="flex flex-col gap-sm items-start flex-1">
                 <p className="font-semibold text-sm text-text-primary">Email</p>
-                <Input type="email" value={email} onChange={(e) => handleEmailChange(e.target.value)} />
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} onBlur={commitEmail} />
               </div>
             </div>
           </div>

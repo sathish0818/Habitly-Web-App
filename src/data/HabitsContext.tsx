@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useAuth } from "./AuthContext";
 
 export type Frequency = "daily" | "weekly" | "custom";
@@ -229,17 +229,38 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
   const [storedHabits, setStoredHabits] = useState<StoredHabit[]>(() => loadHabitsFor(email));
   const [tick, setTick] = useState(0);
 
-  // reload whenever the signed-in account changes (sign in/out, switch account)
+  // always current by the time effects run this render, so the persistence
+  // effect below never writes a just-loaded account's habits under a stale key
+  const emailRef = useRef(email);
+  emailRef.current = email;
+
+  const prevEmailRef = useRef<string | null>(null);
+
+  // reload whenever the signed-in account changes (sign in/out, switch account).
+  // if the email changed while staying signed in (editing it in Settings,
+  // rather than a sign-out/sign-in), that's a rename — carry the habit data
+  // to the new key instead of orphaning it under the old one.
   useEffect(() => {
+    const prevEmail = prevEmailRef.current;
+    if (prevEmail && email && prevEmail !== email) {
+      const oldKey = STORAGE_PREFIX + prevEmail;
+      const newKey = STORAGE_PREFIX + email;
+      const oldRaw = localStorage.getItem(oldKey);
+      if (oldRaw && !localStorage.getItem(newKey)) {
+        localStorage.setItem(newKey, oldRaw);
+      }
+      localStorage.removeItem(oldKey);
+    }
+    prevEmailRef.current = email;
     setStoredHabits(loadHabitsFor(email));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email]);
 
   useEffect(() => {
-    if (email) {
-      localStorage.setItem(STORAGE_PREFIX + email, JSON.stringify(storedHabits));
+    if (emailRef.current) {
+      localStorage.setItem(STORAGE_PREFIX + emailRef.current, JSON.stringify(storedHabits));
     }
-  }, [storedHabits, email]);
+  }, [storedHabits]);
 
   // re-derive today's completion / streaks when the tab regains focus, so an
   // app left open across midnight picks up the new day without a reload
