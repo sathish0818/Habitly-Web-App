@@ -121,8 +121,9 @@ export default function HabitForm({ mode, initialValues, onSubmit }: HabitFormPr
           </div>
           <div className="flex flex-col gap-1.5 min-w-0 flex-1">
             <p className="font-semibold text-md text-text-primary truncate">{name || "New habit"}</p>
-            <p className="text-xs text-text-secondary truncate capitalize">
-              {frequency} · {reminder === "No reminder" || !reminder ? "No reminder set" : `Reminder at ${reminder}`}
+            <p className="text-xs text-text-secondary truncate">
+              <span className="capitalize">{frequency}</span> ·{" "}
+              {reminder === "No reminder" || !reminder ? "No reminder set" : `Reminder at ${reminder}`}
             </p>
           </div>
           <div className="bg-surface border-[1.5px] border-border rounded-sm size-6 shrink-0" />
