@@ -159,6 +159,7 @@ export default function HabitList() {
               name={habit.name}
               icon={habit.icon}
               streak={habit.streak}
+              streakState={habit.streakState}
               checked={habit.completedToday}
               onToggle={() => toggleHabit(habit.id)}
               onEdit={() => navigate(`/edit/${habit.id}`)}
@@ -176,6 +177,7 @@ export default function HabitList() {
               name={habit.name}
               icon={habit.icon}
               streak={habit.streak}
+              streakState={habit.streakState}
               checked={habit.completedToday}
               isLast={i === filteredHabits.length - 1}
               onToggle={() => toggleHabit(habit.id)}

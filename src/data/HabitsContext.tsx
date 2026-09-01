@@ -24,11 +24,15 @@ type StoredHabit = {
 
 export type Habit = StoredHabit & {
   streak: number;
+  streakState: StreakState;
   completedToday: boolean;
   totalCheckIns: number;
   completionRate: number;
   loggedToday: number;
+  milestones: number[];
 };
+
+export const MILESTONE_DAYS = [7, 30, 100];
 
 const STORAGE_PREFIX = "habitly.habits.";
 const DEMO_EMAIL = "alex@habitly.app";
@@ -49,18 +53,56 @@ function daysBetween(fromStr: string, toStr: string): number {
   return Math.round((to - from) / 86_400_000);
 }
 
-function computeStreak(completedDates: string[]): number {
-  if (completedDates.length === 0) return 0;
+export type StreakState = "active" | "grace" | "broken";
+
+export type StreakInfo = {
+  streak: number;
+  state: StreakState;
+};
+
+// Streaks get one free "recovery day" per 7 real completed days -- a single
+// missed day dips the streak's momentum instead of zeroing it. Walking
+// backward from today, a missed day is covered by a grace charge if one is
+// available; the streak count itself only increases on real completions.
+function computeStreakInfo(completedDates: string[]): StreakInfo {
+  if (completedDates.length === 0) return { streak: 0, state: "broken" };
   const set = new Set(completedDates);
   const today = todayStr();
-  let cursor = set.has(today) ? today : addDays(today, -1);
-  if (!set.has(cursor)) return 0;
+  const completedToday = set.has(today);
+
+  // today doesn't count as a miss while it's still in progress -- the walk
+  // starts at today only once it's actually completed, otherwise yesterday.
+  let cursor = completedToday ? today : addDays(today, -1);
   let streak = 0;
-  while (set.has(cursor)) {
-    streak += 1;
-    cursor = addDays(cursor, -1);
+  let grace = 1;
+  let sinceGraceRegen = 0;
+  let usedGraceBeforeFirstRealDay = false;
+  let sawRealDay = false;
+  let iterations = 0;
+
+  while (iterations < 1000) {
+    iterations += 1;
+    if (set.has(cursor)) {
+      streak += 1;
+      sawRealDay = true;
+      sinceGraceRegen += 1;
+      if (sinceGraceRegen >= 7 && grace < 1) {
+        grace = 1;
+        sinceGraceRegen = 0;
+      }
+      cursor = addDays(cursor, -1);
+    } else if (grace > 0) {
+      grace -= 1;
+      if (!sawRealDay) usedGraceBeforeFirstRealDay = true;
+      cursor = addDays(cursor, -1);
+    } else {
+      break;
+    }
   }
-  return streak;
+
+  if (streak === 0) return { streak: 0, state: "broken" };
+  const state: StreakState = !completedToday && usedGraceBeforeFirstRealDay ? "grace" : "active";
+  return { streak, state };
 }
 
 function computeCompletionRate(completedDates: string[], createdAt: string): number {
@@ -70,13 +112,16 @@ function computeCompletionRate(completedDates: string[], createdAt: string): num
 
 function deriveHabit(h: StoredHabit): Habit {
   const today = todayStr();
+  const { streak, state } = computeStreakInfo(h.completedDates);
   return {
     ...h,
     completedToday: h.completedDates.includes(today),
-    streak: computeStreak(h.completedDates),
+    streak,
+    streakState: state,
     totalCheckIns: h.completedDates.length,
     completionRate: computeCompletionRate(h.completedDates, h.createdAt),
     loggedToday: h.loggedByDate?.[today] ?? 0,
+    milestones: MILESTONE_DAYS.filter((m) => streak >= m),
   };
 }
 

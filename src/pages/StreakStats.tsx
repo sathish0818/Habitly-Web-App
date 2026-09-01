@@ -1,13 +1,23 @@
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useHabits } from "../data/HabitsContext";
+import { useMood } from "../data/MoodContext";
+import { computeHeatmap, computeMoodCorrelation } from "../lib/insights";
 import TrendChart from "../components/TrendChart";
+import CalendarHeatmap from "../components/CalendarHeatmap";
 import Button from "../components/Button";
 import Icon from "../components/Icon";
 
+const HEATMAP_WEEKS = 16;
+
 export default function StreakStats() {
   const { habits, stats } = useHabits();
+  const { moodByDate } = useMood();
   const navigate = useNavigate();
   const ranked = [...habits].sort((a, b) => b.completionRate - a.completionRate);
+
+  const heatmapDays = useMemo(() => computeHeatmap(habits, HEATMAP_WEEKS), [habits]);
+  const correlation = useMemo(() => computeMoodCorrelation(habits, moodByDate), [habits, moodByDate]);
 
   const trend = stats.weeklyTrend;
   const lastWeek = trend[trend.length - 1] ?? 0;
@@ -100,6 +110,38 @@ export default function StreakStats() {
           </div>
         </div>
         <TrendChart data={trend} startLabel="10 wks ago" endLabel="This week" />
+      </div>
+
+      <div className="bg-surface border border-border rounded-lg flex flex-col gap-md items-start p-lg w-full">
+        <div className="flex items-center justify-between w-full">
+          <p className="font-semibold text-md text-text-primary">Consistency — last {HEATMAP_WEEKS} weeks</p>
+          <div className="flex items-center gap-xs text-xs text-text-secondary">
+            <span>Less</span>
+            <span className="size-3 rounded-xs bg-surface-alt" />
+            <span className="size-3 rounded-xs bg-accent-subtle" />
+            <span className="size-3 rounded-xs bg-accent/60" />
+            <span className="size-3 rounded-xs bg-accent" />
+            <span>More</span>
+          </div>
+        </div>
+        <CalendarHeatmap days={heatmapDays} />
+      </div>
+
+      <div className="bg-accent-subtle rounded-lg flex gap-md items-center p-lg w-full">
+        <Icon name="insights" className="text-accent shrink-0" style={{ fontSize: 28 }} />
+        <div className="flex flex-col gap-0.5">
+          <p className="font-semibold text-sm text-text-primary">Insight</p>
+          {correlation ? (
+            <p className="text-sm text-text-primary">
+              You complete habits <span className="font-bold">{correlation.multiplier.toFixed(1)}x</span> more often on{" "}
+              <span aria-hidden>🙂</span> days than on 😐/😩 days.
+            </p>
+          ) : (
+            <p className="text-sm text-text-primary">
+              Log your mood a few more times during check-ins to unlock this insight.
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="bg-surface border border-border rounded-lg flex flex-col gap-md items-start p-lg w-full">

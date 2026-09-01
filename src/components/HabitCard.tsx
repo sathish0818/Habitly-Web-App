@@ -4,12 +4,13 @@ import CardMenu from "./CardMenu";
 import ProgressRing from "./ProgressRing";
 import Icon from "./Icon";
 import { formatTargetValue } from "../lib/formatTargetValue";
-import type { QuantifiedUnit } from "../data/HabitsContext";
+import type { QuantifiedUnit, StreakState } from "../data/HabitsContext";
 
 type HabitCardProps = {
   name: string;
   icon: string;
   streak: number;
+  streakState?: StreakState;
   checked: boolean;
   onToggle: () => void;
   onEdit: () => void;
@@ -22,6 +23,7 @@ export default function HabitCard({
   name,
   icon,
   streak,
+  streakState,
   checked,
   onToggle,
   onEdit,
@@ -51,7 +53,7 @@ export default function HabitCard({
             {formatTargetValue(quantified.loggedToday, quantified.unit)} / {formatTargetValue(quantified.targetValue, quantified.unit)}
           </p>
         ) : (
-          <StreakBadge days={streak} className="self-start" />
+          <StreakBadge days={streak} state={streakState} className="self-start" />
         )}
       </div>
       <CardMenu onEdit={onEdit} onDelete={onDelete} />
