@@ -5,6 +5,7 @@ import ProgressRing from "./ProgressRing";
 import Icon from "./Icon";
 import { formatTargetValue } from "../lib/formatTargetValue";
 import type { QuantifiedUnit, StreakState } from "../data/HabitsContext";
+import { useWellbeing } from "../data/WellbeingContext";
 
 type HabitCardProps = {
   name: string;
@@ -31,6 +32,7 @@ export default function HabitCard({
   quantified,
   onLog,
 }: HabitCardProps) {
+  const { unitSystem } = useWellbeing();
   return (
     <div
       className={`flex items-center gap-md p-md rounded-lg w-full transition-colors ${
@@ -50,7 +52,7 @@ export default function HabitCard({
         </p>
         {quantified ? (
           <p className="text-xs font-medium text-text-secondary">
-            {formatTargetValue(quantified.loggedToday, quantified.unit)} / {formatTargetValue(quantified.targetValue, quantified.unit)}
+            {formatTargetValue(quantified.loggedToday, quantified.unit, unitSystem)} / {formatTargetValue(quantified.targetValue, quantified.unit, unitSystem)}
           </p>
         ) : (
           <StreakBadge days={streak} state={streakState} className="self-start" />

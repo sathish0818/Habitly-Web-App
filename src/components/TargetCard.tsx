@@ -3,6 +3,7 @@ import Icon from "./Icon";
 import Toggle from "./Toggle";
 import type { QuantifiedUnit } from "../data/HabitsContext";
 import { formatTargetValue } from "../lib/formatTargetValue";
+import { useWellbeing } from "../data/WellbeingContext";
 
 export type TargetCardState = "suggested" | "edited";
 
@@ -34,6 +35,7 @@ export default function TargetCard({
   max,
 }: TargetCardProps) {
   const [state, setState] = useState<TargetCardState>("suggested");
+  const { unitSystem } = useWellbeing();
 
   const adjust = (delta: number) => {
     const next = Math.min(max, Math.max(min, value + delta));
@@ -71,7 +73,7 @@ export default function TargetCard({
           <Icon name="remove" style={{ fontSize: 16 }} />
         </button>
         <p className="flex-1 text-center font-bold text-xl text-text-primary">
-          {formatTargetValue(value, unit)}
+          {formatTargetValue(value, unit, unitSystem)}
         </p>
         <button
           type="button"

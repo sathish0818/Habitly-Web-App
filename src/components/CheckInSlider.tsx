@@ -1,6 +1,7 @@
 import Icon from "./Icon";
 import { formatTargetValue } from "../lib/formatTargetValue";
 import type { QuantifiedUnit } from "../data/HabitsContext";
+import { useWellbeing } from "../data/WellbeingContext";
 
 type CheckInSliderProps = {
   value: number;
@@ -13,6 +14,7 @@ type CheckInSliderProps = {
 };
 
 export default function CheckInSlider({ value, target, unit, min, max, step, onChange }: CheckInSliderProps) {
+  const { unitSystem } = useWellbeing();
   const percent = Math.min(100, Math.round((value / max) * 100));
   const metTarget = value >= target;
 
@@ -33,9 +35,9 @@ export default function CheckInSlider({ value, target, unit, min, max, step, onC
         </button>
         <div className="flex flex-col items-center flex-1">
           <p className={`font-bold text-3xl ${metTarget ? "text-success-text" : "text-text-primary"}`}>
-            {formatTargetValue(value, unit)}
+            {formatTargetValue(value, unit, unitSystem)}
           </p>
-          <p className="text-xs text-text-secondary">of {formatTargetValue(target, unit)} target</p>
+          <p className="text-xs text-text-secondary">of {formatTargetValue(target, unit, unitSystem)} target</p>
         </div>
         <button
           type="button"
@@ -60,9 +62,9 @@ export default function CheckInSlider({ value, target, unit, min, max, step, onC
       />
 
       <div className="flex items-center justify-between w-full text-xs text-text-secondary">
-        <span>{formatTargetValue(min, unit)}</span>
+        <span>{formatTargetValue(min, unit, unitSystem)}</span>
         <span>{percent}%</span>
-        <span>{formatTargetValue(max, unit)}</span>
+        <span>{formatTargetValue(max, unit, unitSystem)}</span>
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import { useToast } from "../data/ToastContext";
 import { useAuth } from "../data/AuthContext";
 import { useHabits } from "../data/HabitsContext";
 import { useWellbeing } from "../data/WellbeingContext";
+import { useMood } from "../data/MoodContext";
 
 function initialsFor(name: string) {
   const parts = name.trim().split(/\s+/);
@@ -20,8 +21,9 @@ function initialsFor(name: string) {
 
 export default function Settings() {
   const { user, logout, updateProfile } = useAuth();
-  const { clearAllHabits } = useHabits();
-  const { profile: wellbeingProfile } = useWellbeing();
+  const { habits, clearAllHabits } = useHabits();
+  const { profile: wellbeingProfile, unitSystem, setUnitSystem } = useWellbeing();
+  const { moodByDate } = useMood();
   const [name, setName] = useState(user?.name ?? "Alex Kim");
   const [email, setEmail] = useState(user?.email ?? "alex@habitly.app");
   const [darkMode, setDarkMode] = useState(false);
@@ -47,6 +49,25 @@ export default function Settings() {
 
   const handleUpgradeClick = () => {
     showToast("Pro plan is coming soon", "success");
+  };
+
+  const handleExportData = () => {
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      profile: { name: user?.name, email: user?.email },
+      wellbeingProfile,
+      unitSystem,
+      habits,
+      moodByDate,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `habitly-export-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    showToast("Data exported", "success");
   };
 
   const commitName = () => {
@@ -174,6 +195,41 @@ export default function Settings() {
               </div>
               <Toggle checked={weeklySummary} onChange={setWeeklySummary} aria-label="Weekly summary" />
             </div>
+            <div className="flex items-center w-full">
+              <div className="flex flex-col gap-0.5 items-start flex-1">
+                <p className="font-semibold text-sm text-text-primary">Units</p>
+                <p className="text-xs text-text-secondary">Water shown in liters or fluid ounces</p>
+              </div>
+              <div className="bg-surface-alt flex items-start p-xs rounded-md shrink-0">
+                {(["metric", "imperial"] as const).map((system) => (
+                  <button
+                    key={system}
+                    type="button"
+                    onClick={() => setUnitSystem(system)}
+                    className={`flex items-center justify-center px-md py-sm rounded-sm text-sm font-semibold capitalize cursor-pointer transition-colors ${
+                      unitSystem === system
+                        ? "bg-surface text-accent shadow-sm"
+                        : "text-text-secondary hover:text-text-primary"
+                    }`}
+                  >
+                    {system}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-md items-start w-full">
+          <p className="font-semibold text-lg text-text-primary">Data</p>
+          <div className="bg-surface border border-border rounded-lg flex items-center gap-md p-lg w-full">
+            <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+              <p className="font-semibold text-sm text-text-primary">Export your data</p>
+              <p className="text-xs text-text-secondary">Download all habits, targets, and check-ins as a JSON file.</p>
+            </div>
+            <Button type="button" variant="secondary" size="sm" onClick={handleExportData}>
+              Export
+            </Button>
           </div>
         </div>
       </div>

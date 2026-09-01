@@ -360,21 +360,35 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
     ]);
   };
 
+  // idempotent by (name, unit): revisiting the targets screen updates the
+  // existing target instead of creating a duplicate habit each time.
   const addQuantifiedHabit = (input: NewQuantifiedHabitInput) => {
-    setStoredHabits((prev) => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        name: input.name,
-        icon: input.icon,
-        frequency: "daily",
-        reminder: null,
-        createdAt: todayStr(),
-        completedDates: [],
-        quantified: { targetValue: input.targetValue, unit: input.unit },
-        loggedByDate: {},
-      },
-    ]);
+    setStoredHabits((prev) => {
+      const existing = prev.find(
+        (h) => h.quantified && h.name === input.name && h.quantified.unit === input.unit
+      );
+      if (existing) {
+        return prev.map((h) =>
+          h.id === existing.id
+            ? { ...h, icon: input.icon, quantified: { targetValue: input.targetValue, unit: input.unit } }
+            : h
+        );
+      }
+      return [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          name: input.name,
+          icon: input.icon,
+          frequency: "daily",
+          reminder: null,
+          createdAt: todayStr(),
+          completedDates: [],
+          quantified: { targetValue: input.targetValue, unit: input.unit },
+          loggedByDate: {},
+        },
+      ];
+    });
   };
 
   const logQuantifiedValue = (id: string, value: number) => {
