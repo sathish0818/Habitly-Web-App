@@ -35,13 +35,13 @@ export default function App() {
                     <Route element={<RequireAuth />}>
                       <Route path="/" element={<Home />} />
                       <Route path="/onboarding" element={<OnboardingProfile />} />
-                      <Route path="/targets" element={<YourTargets />} />
                       <Route path="/checkin/:id" element={<DailyCheckIn />} />
                       <Route element={<Layout />}>
                         <Route path="/habits" element={<HabitList />} />
                         <Route path="/add" element={<AddHabit />} />
                         <Route path="/edit/:id" element={<EditHabit />} />
                         <Route path="/stats" element={<StreakStats />} />
+                        <Route path="/targets" element={<YourTargets />} />
                         <Route path="/share" element={<StreakShare />} />
                         <Route path="/settings" element={<Settings />} />
                       </Route>

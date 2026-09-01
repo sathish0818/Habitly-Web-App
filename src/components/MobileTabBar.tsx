@@ -4,6 +4,8 @@ import Icon from "./Icon";
 const NAV_ITEMS = [
   { to: "/stats", icon: "bar_chart", label: "Stats" },
   { to: "/habits", icon: "task_alt", label: "Habits" },
+  { to: "/targets", icon: "track_changes", label: "Targets" },
+  { to: "/share", icon: "ios_share", label: "Share" },
   { to: "/settings", icon: "settings", label: "Settings" },
 ];
 
