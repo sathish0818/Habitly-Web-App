@@ -1,7 +1,10 @@
 import Checkbox from "./Checkbox";
 import StreakBadge from "./StreakBadge";
 import CardMenu from "./CardMenu";
+import ProgressRing from "./ProgressRing";
 import Icon from "./Icon";
+import { formatTargetValue } from "../lib/formatTargetValue";
+import type { QuantifiedUnit } from "../data/HabitsContext";
 
 type HabitCardProps = {
   name: string;
@@ -11,9 +14,21 @@ type HabitCardProps = {
   onToggle: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  quantified?: { targetValue: number; unit: QuantifiedUnit; loggedToday: number };
+  onLog?: () => void;
 };
 
-export default function HabitCard({ name, icon, streak, checked, onToggle, onEdit, onDelete }: HabitCardProps) {
+export default function HabitCard({
+  name,
+  icon,
+  streak,
+  checked,
+  onToggle,
+  onEdit,
+  onDelete,
+  quantified,
+  onLog,
+}: HabitCardProps) {
   return (
     <div
       className={`flex items-center gap-md p-md rounded-lg w-full transition-colors ${
@@ -31,10 +46,30 @@ export default function HabitCard({ name, icon, streak, checked, onToggle, onEdi
         >
           {name}
         </p>
-        <StreakBadge days={streak} className="self-start" />
+        {quantified ? (
+          <p className="text-xs font-medium text-text-secondary">
+            {formatTargetValue(quantified.loggedToday, quantified.unit)} / {formatTargetValue(quantified.targetValue, quantified.unit)}
+          </p>
+        ) : (
+          <StreakBadge days={streak} className="self-start" />
+        )}
       </div>
       <CardMenu onEdit={onEdit} onDelete={onDelete} />
-      <Checkbox checked={checked} onChange={onToggle} aria-label={`Mark ${name} as done`} />
+      {quantified ? (
+        <button
+          type="button"
+          onClick={onLog}
+          aria-label={`Log ${name}`}
+          className="relative flex items-center justify-center cursor-pointer shrink-0"
+        >
+          <ProgressRing progress={quantified.targetValue > 0 ? quantified.loggedToday / quantified.targetValue : 0} />
+          {checked && (
+            <Icon name="check" className="absolute text-success-text" style={{ fontSize: 18 }} />
+          )}
+        </button>
+      ) : (
+        <Checkbox checked={checked} onChange={onToggle} aria-label={`Mark ${name} as done`} />
+      )}
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useHabits, type Frequency } from "../data/HabitsContext";
 import { useToast } from "../data/ToastContext";
+import { useWellbeing } from "../data/WellbeingContext";
 import HabitCard from "../components/HabitCard";
 import HabitRow from "../components/HabitRow";
 import ConfirmDialog from "../components/ConfirmDialog";
@@ -20,6 +21,7 @@ const FILTERS: { value: FilterOption; label: string }[] = [
 
 export default function HabitList() {
   const { habits, toggleHabit, deleteHabit, stats } = useHabits();
+  const { profile: wellbeingProfile } = useWellbeing();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -51,6 +53,21 @@ export default function HabitList() {
           + Add habit
         </Button>
       </div>
+
+      {!wellbeingProfile && (
+        <button
+          type="button"
+          onClick={() => navigate("/onboarding")}
+          className="flex items-center gap-md p-lg rounded-lg border border-accent bg-accent-subtle w-full text-left cursor-pointer hover:opacity-90 transition-opacity"
+        >
+          <Icon name="auto_awesome" className="text-accent shrink-0" style={{ fontSize: 22 }} />
+          <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+            <p className="font-semibold text-sm text-text-primary">Get personalized water, sleep, and step targets</p>
+            <p className="text-xs text-text-secondary">Based on your body, not guesswork — takes under a minute.</p>
+          </div>
+          <Icon name="arrow_forward" className="text-accent shrink-0" style={{ fontSize: 18 }} />
+        </button>
+      )}
 
       <div className="bg-surface border border-border rounded-lg flex flex-wrap gap-lg md:gap-xl items-center p-lg w-full">
         <div className="flex gap-md items-center">
@@ -146,6 +163,8 @@ export default function HabitList() {
               onToggle={() => toggleHabit(habit.id)}
               onEdit={() => navigate(`/edit/${habit.id}`)}
               onDelete={() => setPendingDeleteId(habit.id)}
+              quantified={habit.quantified ? { ...habit.quantified, loggedToday: habit.loggedToday } : undefined}
+              onLog={() => navigate(`/checkin/${habit.id}`)}
             />
           ))}
         </div>
@@ -162,6 +181,8 @@ export default function HabitList() {
               onToggle={() => toggleHabit(habit.id)}
               onEdit={() => navigate(`/edit/${habit.id}`)}
               onDelete={() => setPendingDeleteId(habit.id)}
+              quantified={habit.quantified ? { ...habit.quantified, loggedToday: habit.loggedToday } : undefined}
+              onLog={() => navigate(`/checkin/${habit.id}`)}
             />
           ))}
         </div>

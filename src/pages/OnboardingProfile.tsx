@@ -10,8 +10,8 @@ export default function OnboardingProfile() {
 
   const handleSubmit = (values: ProfileFormValues) => {
     saveProfile(values);
-    showToast("Profile saved — your personalized targets are next", "success");
-    navigate("/habits");
+    showToast("Profile saved", "success");
+    navigate("/targets");
   };
 
   return (

@@ -3,6 +3,13 @@ import { useAuth } from "./AuthContext";
 
 export type Frequency = "daily" | "weekly" | "custom";
 
+export type QuantifiedUnit = "ml" | "hrs" | "steps";
+
+export type QuantifiedInfo = {
+  targetValue: number;
+  unit: QuantifiedUnit;
+};
+
 type StoredHabit = {
   id: string;
   name: string;
@@ -11,6 +18,8 @@ type StoredHabit = {
   reminder: string | null;
   createdAt: string;
   completedDates: string[];
+  quantified?: QuantifiedInfo;
+  loggedByDate?: Record<string, number>;
 };
 
 export type Habit = StoredHabit & {
@@ -18,6 +27,7 @@ export type Habit = StoredHabit & {
   completedToday: boolean;
   totalCheckIns: number;
   completionRate: number;
+  loggedToday: number;
 };
 
 const STORAGE_PREFIX = "habitly.habits.";
@@ -66,6 +76,7 @@ function deriveHabit(h: StoredHabit): Habit {
     streak: computeStreak(h.completedDates),
     totalCheckIns: h.completedDates.length,
     completionRate: computeCompletionRate(h.completedDates, h.createdAt),
+    loggedToday: h.loggedByDate?.[today] ?? 0,
   };
 }
 
@@ -179,9 +190,18 @@ type NewHabitInput = {
   reminder: string | null;
 };
 
+type NewQuantifiedHabitInput = {
+  name: string;
+  icon: string;
+  targetValue: number;
+  unit: QuantifiedUnit;
+};
+
 type HabitsContextValue = {
   habits: Habit[];
   addHabit: (input: NewHabitInput) => void;
+  addQuantifiedHabit: (input: NewQuantifiedHabitInput) => void;
+  logQuantifiedValue: (id: string, value: number) => void;
   updateHabit: (id: string, input: NewHabitInput) => void;
   deleteHabit: (id: string) => void;
   toggleHabit: (id: string) => void;
@@ -295,6 +315,41 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
     ]);
   };
 
+  const addQuantifiedHabit = (input: NewQuantifiedHabitInput) => {
+    setStoredHabits((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        name: input.name,
+        icon: input.icon,
+        frequency: "daily",
+        reminder: null,
+        createdAt: todayStr(),
+        completedDates: [],
+        quantified: { targetValue: input.targetValue, unit: input.unit },
+        loggedByDate: {},
+      },
+    ]);
+  };
+
+  const logQuantifiedValue = (id: string, value: number) => {
+    const today = todayStr();
+    setStoredHabits((prev) =>
+      prev.map((h) => {
+        if (h.id !== id || !h.quantified) return h;
+        const loggedByDate = { ...h.loggedByDate, [today]: value };
+        const metTarget = value >= h.quantified.targetValue;
+        const hasToday = h.completedDates.includes(today);
+        const completedDates = metTarget
+          ? hasToday
+            ? h.completedDates
+            : [...h.completedDates, today].sort()
+          : h.completedDates.filter((d) => d !== today);
+        return { ...h, completedDates, loggedByDate };
+      })
+    );
+  };
+
   const updateHabit = (id: string, input: NewHabitInput) => {
     setStoredHabits((prev) =>
       prev.map((h) =>
@@ -346,7 +401,18 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
 
   return (
     <HabitsContext.Provider
-      value={{ habits, addHabit, updateHabit, deleteHabit, toggleHabit, getHabit, clearAllHabits, stats }}
+      value={{
+        habits,
+        addHabit,
+        addQuantifiedHabit,
+        logQuantifiedValue,
+        updateHabit,
+        deleteHabit,
+        toggleHabit,
+        getHabit,
+        clearAllHabits,
+        stats,
+      }}
     >
       {children}
     </HabitsContext.Provider>
