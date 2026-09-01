@@ -40,9 +40,9 @@ export default function StreakStats() {
       <div className="flex items-center w-full">
         <p className="flex-1 font-bold text-xl md:text-2xl text-text-primary">Streak &amp; Stats</p>
         <div className="flex gap-sm items-center">
-          <Button size="sm" variant="secondary" onClick={() => navigate("/share")}>
-            <Icon name="ios_share" style={{ fontSize: 16 }} />
-            Share
+          <Button size="sm" variant="secondary" onClick={() => navigate("/streak")}>
+            <Icon name="local_fire_department" style={{ fontSize: 16 }} />
+            Streak
           </Button>
           <Button size="sm" onClick={() => navigate("/add")}>
             + Add habit

@@ -42,7 +42,7 @@ export default function App() {
                         <Route path="/edit/:id" element={<EditHabit />} />
                         <Route path="/stats" element={<StreakStats />} />
                         <Route path="/targets" element={<YourTargets />} />
-                        <Route path="/share" element={<StreakShare />} />
+                        <Route path="/streak" element={<StreakShare />} />
                         <Route path="/settings" element={<Settings />} />
                       </Route>
                     </Route>
