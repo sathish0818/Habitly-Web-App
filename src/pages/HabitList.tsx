@@ -6,6 +6,7 @@ import { useWellbeing } from "../data/WellbeingContext";
 import HabitCard from "../components/HabitCard";
 import HabitRow from "../components/HabitRow";
 import ConfirmDialog from "../components/ConfirmDialog";
+import CheckInModal from "../components/CheckInModal";
 import Button from "../components/Button";
 import Icon from "../components/Icon";
 
@@ -25,6 +26,7 @@ export default function HabitList() {
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [checkInHabitId, setCheckInHabitId] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterOption>("all");
   const [view, setView] = useState<ViewMode>("card");
 
@@ -165,7 +167,7 @@ export default function HabitList() {
               onEdit={() => navigate(`/edit/${habit.id}`)}
               onDelete={() => setPendingDeleteId(habit.id)}
               quantified={habit.quantified ? { ...habit.quantified, loggedToday: habit.loggedToday } : undefined}
-              onLog={() => navigate(`/checkin/${habit.id}`)}
+              onLog={() => setCheckInHabitId(habit.id)}
             />
           ))}
         </div>
@@ -184,7 +186,7 @@ export default function HabitList() {
               onEdit={() => navigate(`/edit/${habit.id}`)}
               onDelete={() => setPendingDeleteId(habit.id)}
               quantified={habit.quantified ? { ...habit.quantified, loggedToday: habit.loggedToday } : undefined}
-              onLog={() => navigate(`/checkin/${habit.id}`)}
+              onLog={() => setCheckInHabitId(habit.id)}
             />
           ))}
         </div>
@@ -198,6 +200,10 @@ export default function HabitList() {
           onConfirm={confirmDelete}
           onCancel={() => setPendingDeleteId(null)}
         />
+      )}
+
+      {checkInHabitId && (
+        <CheckInModal habitId={checkInHabitId} onClose={() => setCheckInHabitId(null)} />
       )}
     </div>
   );
