@@ -18,6 +18,7 @@ import SignUp from "./pages/SignUp";
 import OnboardingProfile from "./pages/OnboardingProfile";
 import YourTargets from "./pages/YourTargets";
 import DailyCheckIn from "./pages/DailyCheckIn";
+import StreakShare from "./pages/StreakShare";
 
 export default function App() {
   return (
@@ -41,6 +42,7 @@ export default function App() {
                         <Route path="/add" element={<AddHabit />} />
                         <Route path="/edit/:id" element={<EditHabit />} />
                         <Route path="/stats" element={<StreakStats />} />
+                        <Route path="/share" element={<StreakShare />} />
                         <Route path="/settings" element={<Settings />} />
                       </Route>
                     </Route>
