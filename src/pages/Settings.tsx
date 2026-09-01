@@ -8,6 +8,7 @@ import ConfirmDialog from "../components/ConfirmDialog";
 import { useToast } from "../data/ToastContext";
 import { useAuth } from "../data/AuthContext";
 import { useHabits } from "../data/HabitsContext";
+import { useWellbeing } from "../data/WellbeingContext";
 
 function initialsFor(name: string) {
   const parts = name.trim().split(/\s+/);
@@ -20,6 +21,7 @@ function initialsFor(name: string) {
 export default function Settings() {
   const { user, logout, updateProfile } = useAuth();
   const { clearAllHabits } = useHabits();
+  const { profile: wellbeingProfile } = useWellbeing();
   const [name, setName] = useState(user?.name ?? "Alex Kim");
   const [email, setEmail] = useState(user?.email ?? "alex@habitly.app");
   const [darkMode, setDarkMode] = useState(false);
@@ -126,6 +128,25 @@ export default function Settings() {
                 <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} onBlur={commitEmail} />
               </div>
             </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-md items-start w-full">
+          <p className="font-semibold text-lg text-text-primary">Wellbeing profile</p>
+          <div className="bg-surface border border-border rounded-lg flex items-center gap-md p-lg w-full">
+            <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+              <p className="font-semibold text-sm text-text-primary">
+                {wellbeingProfile ? "Update your personalized targets" : "Set up personalized targets"}
+              </p>
+              <p className="text-xs text-text-secondary">
+                {wellbeingProfile
+                  ? "Height, weight, age, and activity level power your water/sleep/step suggestions."
+                  : "Answer a few questions to get water, sleep, and step targets based on your body, not guesswork."}
+              </p>
+            </div>
+            <Button type="button" variant="secondary" size="sm" onClick={() => navigate("/onboarding")}>
+              {wellbeingProfile ? "Edit" : "Set up"}
+            </Button>
           </div>
         </div>
 
