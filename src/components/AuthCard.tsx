@@ -10,8 +10,9 @@ type AuthCardProps = {
   submitLabel: string;
   onSubmit: () => void;
   submitDisabled?: boolean;
-  onGoogleCredential: (idToken: string) => void;
+  onGoogleCredential?: (idToken: string) => void;
   googleLoading?: boolean;
+  showGoogle?: boolean;
   footerPrefix: string;
   footerLinkText: string;
   footerLinkTo: string;
@@ -26,16 +27,18 @@ export default function AuthCard({
   submitDisabled,
   onGoogleCredential,
   googleLoading,
+  showGoogle = true,
   footerPrefix,
   footerLinkText,
   footerLinkTo,
   children,
 }: AuthCardProps) {
   const googleButtonRef = useRef<HTMLDivElement>(null);
+  const showGoogleSection = showGoogle && isGoogleSignInConfigured();
 
   useEffect(() => {
     const container = googleButtonRef.current;
-    if (!container) return;
+    if (!container || !onGoogleCredential) return;
     renderGoogleButton(container, onGoogleCredential, { width: 320 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -65,7 +68,7 @@ export default function AuthCard({
           {submitLabel}
         </Button>
 
-        {isGoogleSignInConfigured() && (
+        {showGoogleSection && (
           <>
             <div className="flex items-center gap-3 w-full max-w-80">
               <div className="h-px bg-border flex-1" />

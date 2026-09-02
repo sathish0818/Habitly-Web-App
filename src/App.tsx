@@ -17,6 +17,8 @@ import StreakStats from "./pages/StreakStats";
 import Settings from "./pages/Settings";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import OnboardingProfile from "./pages/OnboardingProfile";
 import YourTargets from "./pages/YourTargets";
 import DailyCheckIn from "./pages/DailyCheckIn";
@@ -37,6 +39,8 @@ export default function App() {
                   <Routes>
                     <Route path="/signin" element={<SignIn />} />
                     <Route path="/signup" element={<SignUp />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
                     <Route element={<RequireAuth />}>
                       <Route path="/" element={<Home />} />
                       <Route path="/onboarding" element={<OnboardingProfile />} />

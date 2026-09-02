@@ -30,6 +30,8 @@ type AuthContextValue = {
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<{ needsEmailConfirmation: boolean }>;
   loginWithGoogleIdToken: (idToken: string) => Promise<void>;
+  requestPasswordReset: (email: string) => Promise<void>;
+  updatePassword: (newPassword: string) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<Pick<User, "name" | "avatarUrl">>) => Promise<boolean>;
   updateEmail: (email: string) => Promise<void>;
@@ -87,6 +89,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw new Error(error.message);
   };
 
+  const requestPasswordReset = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) throw new Error(error.message);
+  };
+
+  const updatePassword = async (newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) throw new Error(error.message);
+  };
+
   const logout = async () => {
     await supabase.auth.signOut();
   };
@@ -116,7 +130,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, signup, loginWithGoogleIdToken, logout, updateProfile, updateEmail }}
+      value={{
+        user,
+        loading,
+        login,
+        signup,
+        loginWithGoogleIdToken,
+        requestPasswordReset,
+        updatePassword,
+        logout,
+        updateProfile,
+        updateEmail,
+      }}
     >
       {children}
     </AuthContext.Provider>

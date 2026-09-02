@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthCard from "../components/AuthCard";
 import Input from "../components/Input";
 import { useAuth } from "../data/AuthContext";
@@ -63,7 +63,12 @@ export default function SignIn() {
         />
       </div>
       <div className="flex flex-col gap-sm items-start w-full">
-        <p className="font-semibold text-sm text-text-primary">Password</p>
+        <div className="flex items-center justify-between w-full">
+          <p className="font-semibold text-sm text-text-primary">Password</p>
+          <Link to="/forgot-password" className="text-xs font-semibold text-accent hover:underline">
+            Forgot password?
+          </Link>
+        </div>
         <Input
           type="password"
           placeholder="••••••••"
