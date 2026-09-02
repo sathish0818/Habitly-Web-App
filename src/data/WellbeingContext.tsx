@@ -34,6 +34,7 @@ function fromRow(row: WellbeingRow): WellbeingProfile {
 
 type WellbeingContextValue = {
   profile: WellbeingProfile | null;
+  loading: boolean;
   saveProfile: (profile: WellbeingProfile) => Promise<boolean>;
   unitSystem: UnitSystem;
   setUnitSystem: (system: UnitSystem) => void;
@@ -42,33 +43,42 @@ type WellbeingContextValue = {
 const WellbeingContext = createContext<WellbeingContextValue | null>(null);
 
 export function WellbeingProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { showToast } = useToast();
   const userId = user?.id ?? null;
 
   const [profile, setProfile] = useState<WellbeingProfile | null>(null);
+  const [loading, setLoading] = useState(true);
   const [unitSystem, setUnitSystemState] = useState<UnitSystem>(() => loadUnitSystemFor(userId));
 
   useEffect(() => {
     setUnitSystemState(loadUnitSystemFor(userId));
+    // Wait for auth to settle -- otherwise userId briefly reads as null on
+    // every load and looks identical to "logged out, no profile", which
+    // flashed the "set up your profile" prompt at returning users (same bug
+    // this fixed in HabitsContext).
+    if (authLoading) return;
     if (!userId) {
       setProfile(null);
+      setLoading(false);
       return;
     }
     let cancelled = false;
+    setLoading(true);
     supabase
       .from("wellbeing_profiles")
       .select("height_cm, weight_kg, age, sex, activity_level")
       .eq("user_id", userId)
       .maybeSingle()
       .then(({ data, error }) => {
-        if (cancelled || error) return;
-        setProfile(data ? fromRow(data) : null);
+        if (cancelled) return;
+        if (!error) setProfile(data ? fromRow(data) : null);
+        setLoading(false);
       });
     return () => {
       cancelled = true;
     };
-  }, [userId]);
+  }, [userId, authLoading]);
 
   const saveProfile = async (next: WellbeingProfile) => {
     if (!userId) return false;
@@ -98,7 +108,7 @@ export function WellbeingProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <WellbeingContext.Provider value={{ profile, saveProfile, unitSystem, setUnitSystem }}>
+    <WellbeingContext.Provider value={{ profile, loading, saveProfile, unitSystem, setUnitSystem }}>
       {children}
     </WellbeingContext.Provider>
   );

@@ -4,8 +4,10 @@ import TargetsStep from "../components/TargetsStep";
 import Icon from "../components/Icon";
 
 export default function YourTargets() {
-  const { profile } = useWellbeing();
+  const { profile, loading } = useWellbeing();
   const navigate = useNavigate();
+
+  if (loading) return null;
 
   if (!profile) {
     return (

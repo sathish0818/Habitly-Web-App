@@ -22,7 +22,7 @@ const FILTERS: { value: FilterOption; label: string }[] = [
 
 export default function HabitList() {
   const { habits, toggleHabit, deleteHabit, stats } = useHabits();
-  const { profile: wellbeingProfile } = useWellbeing();
+  const { profile: wellbeingProfile, loading: wellbeingLoading } = useWellbeing();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -57,7 +57,7 @@ export default function HabitList() {
         </Button>
       </div>
 
-      {!wellbeingProfile && (
+      {!wellbeingLoading && !wellbeingProfile && (
         <button
           type="button"
           onClick={() => navigate("/onboarding")}

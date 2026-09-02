@@ -14,8 +14,9 @@ type Profile = { name: string; avatar_url: string | null };
 
 function userFromSession(session: Session, profile: Profile | null): User {
   const email = session.user.email ?? "";
-  const metadataName = (session.user.user_metadata?.name as string | undefined) ?? "";
-  const metadataAvatar = session.user.user_metadata?.avatar_url as string | undefined;
+  const meta = session.user.user_metadata ?? {};
+  const metadataName = (meta.name as string | undefined) || (meta.full_name as string | undefined) || "";
+  const metadataAvatar = (meta.avatar_url as string | undefined) || (meta.picture as string | undefined);
   return {
     id: session.user.id,
     email,
