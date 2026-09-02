@@ -20,7 +20,7 @@ type CheckInFormProps = {
 };
 
 export default function CheckInForm({ habitId, onDone }: CheckInFormProps) {
-  const { getHabit, logQuantifiedValue } = useHabits();
+  const { getHabit, logQuantifiedValue, toggleHabit } = useHabits();
   const { moodByDate, setMoodForToday } = useMood();
   const { showToast } = useToast();
 
@@ -30,11 +30,39 @@ export default function CheckInForm({ habitId, onDone }: CheckInFormProps) {
   const [value, setValue] = useState(habit?.loggedToday ?? 0);
   const [mood, setMood] = useState<Mood | null>(moodByDate[today] ?? null);
 
-  if (!habit || !habit.quantified) {
+  if (!habit) {
     return (
       <div className="flex flex-col gap-md items-start">
         <p className="font-bold text-xl text-text-primary">Habit not found</p>
         <p className="text-sm text-text-secondary">It may have already been deleted.</p>
+      </div>
+    );
+  }
+
+  if (!habit.quantified) {
+    return (
+      <div className="flex flex-col gap-lg items-start w-full">
+        <div className="flex items-center gap-md w-full">
+          <div className="bg-accent-subtle rounded-md size-12 flex items-center justify-center shrink-0">
+            <Icon name={habit.icon} className="text-accent" style={{ fontSize: 22 }} />
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <p className="font-bold text-xl text-text-primary">{habit.name}</p>
+            <p className="text-sm text-text-secondary">
+              {habit.completedToday ? "Marked done for today" : "Not done yet today"}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            toggleHabit(habit.id);
+            onDone();
+          }}
+          className="flex items-center justify-center gap-sm rounded-md font-semibold px-lg py-md text-md bg-accent hover:bg-accent-hover text-accent-on cursor-pointer w-full"
+        >
+          {habit.completedToday ? "Mark as not done" : "Mark as done"}
+        </button>
       </div>
     );
   }
