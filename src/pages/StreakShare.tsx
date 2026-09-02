@@ -64,7 +64,7 @@ export default function StreakShare() {
   };
 
   return (
-    <div className="relative pt-lg md:pt-2xl px-md md:px-2xl pb-2xl w-full overflow-hidden">
+    <div className="relative pt-lg md:pt-2xl px-md md:px-2xl pb-2xl w-full max-w-[1280px] mx-auto overflow-hidden">
       <div className="pointer-events-none absolute -top-24 -right-24 size-96 rounded-full bg-accent/10 blur-3xl" />
       <div className="pointer-events-none absolute top-52 -left-28 size-80 rounded-full bg-accent/5 blur-3xl" />
 
