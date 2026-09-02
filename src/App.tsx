@@ -19,6 +19,7 @@ import OnboardingProfile from "./pages/OnboardingProfile";
 import YourTargets from "./pages/YourTargets";
 import DailyCheckIn from "./pages/DailyCheckIn";
 import StreakShare from "./pages/StreakShare";
+import NotFound from "./pages/NotFound";
 
 export default function App() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
                         <Route path="/settings" element={<Settings />} />
                       </Route>
                     </Route>
+                    <Route path="*" element={<NotFound />} />
                   </Routes>
                 </BrowserRouter>
               </SidebarProvider>
