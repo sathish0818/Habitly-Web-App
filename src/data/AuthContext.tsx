@@ -109,10 +109,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const updateProfile = async (updates: Partial<Pick<User, "name" | "avatarUrl">>) => {
     if (!user) return false;
     setUser((prev) => (prev ? { ...prev, ...updates } : prev));
-    const patch: Record<string, unknown> = {};
-    if (updates.name !== undefined) patch.name = updates.name;
-    if (updates.avatarUrl !== undefined) patch.avatar_url = updates.avatarUrl;
-    const { error } = await supabase.from("profiles").update(patch).eq("id", user.id);
+    // upsert, not update: an account created before the profiles-row trigger
+    // existed (or any other reason the row is missing) would otherwise have
+    // this silently affect zero rows -- no error, nothing saved.
+    const patch: Record<string, unknown> = { id: user.id };
+    patch.name = updates.name !== undefined ? updates.name : user.name;
+    patch.avatar_url = updates.avatarUrl !== undefined ? updates.avatarUrl : user.avatarUrl ?? null;
+    const { error } = await supabase.from("profiles").upsert(patch, { onConflict: "id" });
     if (error) {
       showToast("Couldn't save your profile — try again.", "error");
       return false;
