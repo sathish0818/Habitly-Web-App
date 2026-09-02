@@ -1,13 +1,13 @@
-import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useHabits } from "../data/HabitsContext";
 import EmptyState from "./EmptyState";
 
 export default function Home() {
-  const { habits } = useHabits();
-  const [hadNoHabitsOnMount] = useState(() => habits.length === 0);
+  const { habits, loading } = useHabits();
 
-  if (hadNoHabitsOnMount) {
+  if (loading) return null;
+
+  if (habits.length === 0) {
     return <EmptyState />;
   }
 

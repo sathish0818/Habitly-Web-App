@@ -1,8 +1,8 @@
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import Button from "./Button";
-import GoogleIcon from "./GoogleIcon";
 import logo from "../assets/logo.png";
+import { isGoogleSignInConfigured, renderGoogleButton } from "../lib/google";
 
 type AuthCardProps = {
   heading: string;
@@ -10,7 +10,7 @@ type AuthCardProps = {
   submitLabel: string;
   onSubmit: () => void;
   submitDisabled?: boolean;
-  onGoogle: () => void;
+  onGoogleCredential: (idToken: string) => void;
   googleLoading?: boolean;
   footerPrefix: string;
   footerLinkText: string;
@@ -24,13 +24,22 @@ export default function AuthCard({
   submitLabel,
   onSubmit,
   submitDisabled,
-  onGoogle,
+  onGoogleCredential,
   googleLoading,
   footerPrefix,
   footerLinkText,
   footerLinkTo,
   children,
 }: AuthCardProps) {
+  const googleButtonRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = googleButtonRef.current;
+    if (!container) return;
+    renderGoogleButton(container, onGoogleCredential, { width: 320 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="bg-surface-alt flex items-center justify-center min-h-screen w-full px-md">
       <form
@@ -56,21 +65,20 @@ export default function AuthCard({
           {submitLabel}
         </Button>
 
-        <div className="flex items-center gap-3 w-full max-w-80">
-          <div className="h-px bg-border flex-1" />
-          <span className="text-xs text-text-secondary">or</span>
-          <div className="h-px bg-border flex-1" />
-        </div>
+        {isGoogleSignInConfigured() && (
+          <>
+            <div className="flex items-center gap-3 w-full max-w-80">
+              <div className="h-px bg-border flex-1" />
+              <span className="text-xs text-text-secondary">or</span>
+              <div className="h-px bg-border flex-1" />
+            </div>
 
-        <button
-          type="button"
-          onClick={onGoogle}
-          disabled={googleLoading}
-          className="flex items-center justify-center gap-2.5 bg-surface border border-border rounded-md py-md w-full max-w-80 text-sm font-semibold text-text-primary cursor-pointer hover:bg-surface-alt disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          <GoogleIcon />
-          {googleLoading ? "Connecting…" : "Continue with Google"}
-        </button>
+            <div className="flex flex-col items-center gap-1.5 w-full max-w-80">
+              <div ref={googleButtonRef} className={googleLoading ? "opacity-60 pointer-events-none" : ""} />
+              {googleLoading && <p className="text-xs text-text-secondary">Connecting…</p>}
+            </div>
+          </>
+        )}
 
         <p className="text-sm text-text-secondary">
           {footerPrefix}{" "}

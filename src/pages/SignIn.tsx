@@ -4,27 +4,33 @@ import AuthCard from "../components/AuthCard";
 import Input from "../components/Input";
 import { useAuth } from "../data/AuthContext";
 import { useToast } from "../data/ToastContext";
-import { signInWithGoogle } from "../lib/google";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogleIdToken } = useAuth();
   const { showToast } = useToast();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!email.trim() || !password) return;
-    login(email.trim());
-    navigate("/");
+    setLoading(true);
+    try {
+      await login(email.trim(), password);
+      navigate("/");
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Sign in failed", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleGoogle = async () => {
+  const handleGoogleCredential = async (idToken: string) => {
     setGoogleLoading(true);
     try {
-      const profile = await signInWithGoogle();
-      loginWithGoogle(profile);
+      await loginWithGoogleIdToken(idToken);
       navigate("/");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Google sign-in failed", "error");
@@ -38,9 +44,9 @@ export default function SignIn() {
       heading="Welcome back"
       subtext="Sign in to keep your streak going."
       submitLabel="Sign in"
-      submitDisabled={!email.trim() || !password}
+      submitDisabled={!email.trim() || !password || loading}
       onSubmit={handleSubmit}
-      onGoogle={handleGoogle}
+      onGoogleCredential={handleGoogleCredential}
       googleLoading={googleLoading}
       footerPrefix="Don't have an account?"
       footerLinkText="Sign up"

@@ -1,23 +1,12 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useAuth } from "./AuthContext";
+import { useToast } from "./ToastContext";
+import { supabase } from "../lib/supabaseClient";
 
 export type Mood = "great" | "okay" | "rough";
 
-const STORAGE_PREFIX = "habitly.mood.";
-
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
-}
-
-function loadMoodFor(email: string | null): Record<string, Mood> {
-  if (!email) return {};
-  try {
-    const raw = localStorage.getItem(STORAGE_PREFIX + email);
-    if (raw) return JSON.parse(raw);
-  } catch {
-    // fall through
-  }
-  return {};
 }
 
 type MoodContextValue = {
@@ -29,23 +18,41 @@ const MoodContext = createContext<MoodContextValue | null>(null);
 
 export function MoodProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const email = user?.email ?? null;
-  const [moodByDate, setMoodByDate] = useState<Record<string, Mood>>(() => loadMoodFor(email));
-  const emailRef = useRef(email);
-  emailRef.current = email;
+  const { showToast } = useToast();
+  const userId = user?.id ?? null;
+  const [moodByDate, setMoodByDate] = useState<Record<string, Mood>>({});
 
   useEffect(() => {
-    setMoodByDate(loadMoodFor(email));
-  }, [email]);
-
-  useEffect(() => {
-    if (emailRef.current) {
-      localStorage.setItem(STORAGE_PREFIX + emailRef.current, JSON.stringify(moodByDate));
+    if (!userId) {
+      setMoodByDate({});
+      return;
     }
-  }, [moodByDate]);
+    let cancelled = false;
+    supabase
+      .from("moods")
+      .select("date, mood")
+      .eq("user_id", userId)
+      .then(({ data, error }) => {
+        if (cancelled || error || !data) return;
+        const map: Record<string, Mood> = {};
+        for (const row of data) map[row.date] = row.mood as Mood;
+        setMoodByDate(map);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   const setMoodForToday = (mood: Mood) => {
-    setMoodByDate((prev) => ({ ...prev, [todayStr()]: mood }));
+    if (!userId) return;
+    const date = todayStr();
+    setMoodByDate((prev) => ({ ...prev, [date]: mood }));
+    supabase
+      .from("moods")
+      .upsert({ user_id: userId, date, mood }, { onConflict: "user_id,date" })
+      .then(({ error }) => {
+        if (error) showToast("Couldn't save your mood — try again.", "error");
+      });
   };
 
   return (

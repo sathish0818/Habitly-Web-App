@@ -4,28 +4,43 @@ import AuthCard from "../components/AuthCard";
 import Input from "../components/Input";
 import { useAuth } from "../data/AuthContext";
 import { useToast } from "../data/ToastContext";
-import { signInWithGoogle } from "../lib/google";
 
 export default function SignUp() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
-  const { signup, loginWithGoogle } = useAuth();
+  const { signup, loginWithGoogleIdToken } = useAuth();
   const { showToast } = useToast();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!name.trim() || !email.trim() || !password) return;
-    signup(name.trim(), email.trim());
-    navigate("/");
+    if (password.length < 6) {
+      showToast("Password must be at least 6 characters", "error");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { needsEmailConfirmation } = await signup(name.trim(), email.trim(), password);
+      if (needsEmailConfirmation) {
+        showToast("Account created — check your email to confirm, then sign in.", "success");
+        navigate("/signin");
+      } else {
+        navigate("/");
+      }
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Sign up failed", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleGoogle = async () => {
+  const handleGoogleCredential = async (idToken: string) => {
     setGoogleLoading(true);
     try {
-      const profile = await signInWithGoogle();
-      loginWithGoogle(profile);
+      await loginWithGoogleIdToken(idToken);
       navigate("/");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Google sign-in failed", "error");
@@ -39,9 +54,9 @@ export default function SignUp() {
       heading="Create your account"
       subtext="Start building better habits today."
       submitLabel="Create account"
-      submitDisabled={!name.trim() || !email.trim() || !password}
+      submitDisabled={!name.trim() || !email.trim() || !password || loading}
       onSubmit={handleSubmit}
-      onGoogle={handleGoogle}
+      onGoogleCredential={handleGoogleCredential}
       googleLoading={googleLoading}
       footerPrefix="Already have an account?"
       footerLinkText="Sign in"
@@ -69,7 +84,7 @@ export default function SignUp() {
         <p className="font-semibold text-sm text-text-primary">Password</p>
         <Input
           type="password"
-          placeholder="••••••••"
+          placeholder="At least 6 characters"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />

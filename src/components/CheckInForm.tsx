@@ -20,7 +20,7 @@ type CheckInFormProps = {
 };
 
 export default function CheckInForm({ habitId, onDone }: CheckInFormProps) {
-  const { getHabit, logQuantifiedValue, toggleHabit } = useHabits();
+  const { getHabit, logQuantifiedValue, toggleHabit, loading } = useHabits();
   const { moodByDate, setMoodForToday } = useMood();
   const { showToast } = useToast();
 
@@ -29,6 +29,8 @@ export default function CheckInForm({ habitId, onDone }: CheckInFormProps) {
 
   const [value, setValue] = useState(habit?.loggedToday ?? 0);
   const [mood, setMood] = useState<Mood | null>(moodByDate[today] ?? null);
+
+  if (loading) return null;
 
   if (!habit) {
     return (

@@ -1,27 +1,35 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useAuth } from "./AuthContext";
+import { useToast } from "./ToastContext";
+import { supabase } from "../lib/supabaseClient";
 import type { WellbeingProfile } from "../lib/wellbeingTargets";
 
 export type UnitSystem = "metric" | "imperial";
 
-const PROFILE_PREFIX = "habitly.wellbeing.";
 const UNITS_PREFIX = "habitly.units.";
 
-function loadProfileFor(email: string | null): WellbeingProfile | null {
-  if (!email) return null;
-  try {
-    const raw = localStorage.getItem(PROFILE_PREFIX + email);
-    if (raw) return JSON.parse(raw);
-  } catch {
-    // fall through
-  }
-  return null;
+function loadUnitSystemFor(userId: string | null): UnitSystem {
+  if (!userId) return "metric";
+  const raw = localStorage.getItem(UNITS_PREFIX + userId);
+  return raw === "imperial" ? "imperial" : "metric";
 }
 
-function loadUnitSystemFor(email: string | null): UnitSystem {
-  if (!email) return "metric";
-  const raw = localStorage.getItem(UNITS_PREFIX + email);
-  return raw === "imperial" ? "imperial" : "metric";
+type WellbeingRow = {
+  height_cm: number;
+  weight_kg: number;
+  age: number;
+  sex: WellbeingProfile["sex"];
+  activity_level: WellbeingProfile["activityLevel"];
+};
+
+function fromRow(row: WellbeingRow): WellbeingProfile {
+  return {
+    heightCm: row.height_cm,
+    weightKg: row.weight_kg,
+    age: row.age,
+    sex: row.sex,
+    activityLevel: row.activity_level,
+  };
 }
 
 type WellbeingContextValue = {
@@ -35,28 +43,58 @@ const WellbeingContext = createContext<WellbeingContextValue | null>(null);
 
 export function WellbeingProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const email = user?.email ?? null;
+  const { showToast } = useToast();
+  const userId = user?.id ?? null;
 
-  const [profile, setProfile] = useState<WellbeingProfile | null>(() => loadProfileFor(email));
-  const [unitSystem, setUnitSystemState] = useState<UnitSystem>(() => loadUnitSystemFor(email));
+  const [profile, setProfile] = useState<WellbeingProfile | null>(null);
+  const [unitSystem, setUnitSystemState] = useState<UnitSystem>(() => loadUnitSystemFor(userId));
 
   useEffect(() => {
-    setProfile(loadProfileFor(email));
-    setUnitSystemState(loadUnitSystemFor(email));
-  }, [email]);
+    setUnitSystemState(loadUnitSystemFor(userId));
+    if (!userId) {
+      setProfile(null);
+      return;
+    }
+    let cancelled = false;
+    supabase
+      .from("wellbeing_profiles")
+      .select("height_cm, weight_kg, age, sex, activity_level")
+      .eq("user_id", userId)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (cancelled || error) return;
+        setProfile(data ? fromRow(data) : null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   const saveProfile = (next: WellbeingProfile) => {
+    if (!userId) return;
     setProfile(next);
-    if (email) {
-      localStorage.setItem(PROFILE_PREFIX + email, JSON.stringify(next));
-    }
+    supabase
+      .from("wellbeing_profiles")
+      .upsert(
+        {
+          user_id: userId,
+          height_cm: next.heightCm,
+          weight_kg: next.weightKg,
+          age: next.age,
+          sex: next.sex,
+          activity_level: next.activityLevel,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" }
+      )
+      .then(({ error }) => {
+        if (error) showToast("Couldn't save your profile — try again.", "error");
+      });
   };
 
   const setUnitSystem = (system: UnitSystem) => {
     setUnitSystemState(system);
-    if (email) {
-      localStorage.setItem(UNITS_PREFIX + email, system);
-    }
+    if (userId) localStorage.setItem(UNITS_PREFIX + userId, system);
   };
 
   return (

@@ -20,7 +20,7 @@ function initialsFor(name: string) {
 }
 
 export default function Settings() {
-  const { user, logout, updateProfile } = useAuth();
+  const { user, logout, updateProfile, updateEmail } = useAuth();
   const { habits, clearAllHabits } = useHabits();
   const { profile: wellbeingProfile, unitSystem, setUnitSystem } = useWellbeing();
   const { moodByDate } = useMood();
@@ -43,7 +43,7 @@ export default function Settings() {
     setConfirmingDelete(false);
     clearAllHabits();
     logout();
-    showToast("Account deleted", "success");
+    showToast("Your data has been cleared and you've been signed out", "success");
     navigate("/signin");
   };
 
@@ -77,7 +77,7 @@ export default function Settings() {
 
   const commitEmail = () => {
     const trimmed = email.trim();
-    if (trimmed && trimmed !== user?.email) updateProfile({ email: trimmed });
+    if (trimmed && trimmed !== user?.email) updateEmail(trimmed);
   };
 
   const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
@@ -272,7 +272,7 @@ export default function Settings() {
               onClick={() => setConfirmingDelete(true)}
               className="px-md py-2.5 font-semibold text-sm text-error cursor-pointer hover:underline"
             >
-              Delete account
+              Delete my data
             </button>
           </div>
         </div>
@@ -281,9 +281,9 @@ export default function Settings() {
 
       {confirmingDelete && (
         <ConfirmDialog
-          title="Delete account?"
-          message="This permanently deletes your account, all habits, and streak history. This can't be undone."
-          confirmLabel="Delete account"
+          title="Delete your data?"
+          message="This permanently deletes all your habits, streak history, and profile data, then signs you out. This can't be undone."
+          confirmLabel="Delete my data"
           onConfirm={handleDeleteAccount}
           onCancel={() => setConfirmingDelete(false)}
         />
