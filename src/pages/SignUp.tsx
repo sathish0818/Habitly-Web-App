@@ -10,6 +10,7 @@ export default function SignUp() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
   const { signup, loginWithGoogle } = useAuth();
   const { showToast } = useToast();
@@ -21,12 +22,15 @@ export default function SignUp() {
   };
 
   const handleGoogle = async () => {
+    setGoogleLoading(true);
     try {
       const profile = await signInWithGoogle();
       loginWithGoogle(profile);
       navigate("/");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Google sign-in failed", "error");
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -38,6 +42,7 @@ export default function SignUp() {
       submitDisabled={!name.trim() || !email.trim() || !password}
       onSubmit={handleSubmit}
       onGoogle={handleGoogle}
+      googleLoading={googleLoading}
       footerPrefix="Already have an account?"
       footerLinkText="Sign in"
       footerLinkTo="/signin"

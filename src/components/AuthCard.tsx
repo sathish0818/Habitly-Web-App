@@ -11,6 +11,7 @@ type AuthCardProps = {
   onSubmit: () => void;
   submitDisabled?: boolean;
   onGoogle: () => void;
+  googleLoading?: boolean;
   footerPrefix: string;
   footerLinkText: string;
   footerLinkTo: string;
@@ -24,6 +25,7 @@ export default function AuthCard({
   onSubmit,
   submitDisabled,
   onGoogle,
+  googleLoading,
   footerPrefix,
   footerLinkText,
   footerLinkTo,
@@ -63,10 +65,11 @@ export default function AuthCard({
         <button
           type="button"
           onClick={onGoogle}
-          className="flex items-center justify-center gap-2.5 bg-surface border border-border rounded-md py-md w-full max-w-80 text-sm font-semibold text-text-primary cursor-pointer hover:bg-surface-alt"
+          disabled={googleLoading}
+          className="flex items-center justify-center gap-2.5 bg-surface border border-border rounded-md py-md w-full max-w-80 text-sm font-semibold text-text-primary cursor-pointer hover:bg-surface-alt disabled:opacity-60 disabled:cursor-not-allowed"
         >
           <GoogleIcon />
-          Continue with Google
+          {googleLoading ? "Connecting…" : "Continue with Google"}
         </button>
 
         <p className="text-sm text-text-secondary">

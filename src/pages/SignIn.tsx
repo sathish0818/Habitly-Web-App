@@ -9,6 +9,7 @@ import { signInWithGoogle } from "../lib/google";
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
   const { login, loginWithGoogle } = useAuth();
   const { showToast } = useToast();
@@ -20,12 +21,15 @@ export default function SignIn() {
   };
 
   const handleGoogle = async () => {
+    setGoogleLoading(true);
     try {
       const profile = await signInWithGoogle();
       loginWithGoogle(profile);
       navigate("/");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Google sign-in failed", "error");
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -37,6 +41,7 @@ export default function SignIn() {
       submitDisabled={!email.trim() || !password}
       onSubmit={handleSubmit}
       onGoogle={handleGoogle}
+      googleLoading={googleLoading}
       footerPrefix="Don't have an account?"
       footerLinkText="Sign up"
       footerLinkTo="/signup"
