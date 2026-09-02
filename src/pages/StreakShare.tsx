@@ -64,16 +64,13 @@ export default function StreakShare() {
   };
 
   return (
-    <div className="relative pt-lg md:pt-2xl px-md md:px-2xl pb-2xl w-full max-w-[1280px] mx-auto overflow-hidden">
-      <div className="pointer-events-none absolute -top-24 -right-24 size-96 rounded-full bg-accent/10 blur-3xl" />
-      <div className="pointer-events-none absolute top-52 -left-28 size-80 rounded-full bg-accent/5 blur-3xl" />
-
-      <div className="relative flex flex-col gap-1 items-start mb-lg">
+    <div className="pt-lg md:pt-2xl px-md md:px-2xl pb-2xl w-full">
+      <div className="flex flex-col gap-1 items-start mb-lg">
         <p className="font-bold text-xl md:text-2xl text-text-primary">Your Streak</p>
         <p className="text-sm text-text-secondary">Track your momentum, and share it when you're proud of it.</p>
       </div>
 
-      <div className="relative flex flex-col lg:flex-row gap-2xl items-center lg:items-start w-full">
+      <div className="flex flex-col lg:flex-row gap-2xl items-center lg:items-start w-full">
         <div className="flex flex-col gap-lg items-center w-full lg:w-auto lg:shrink-0">
           <ShareCard streak={stats.currentStreak} consistency={stats.completionRate} habitIcons={habitIcons} />
           <button
