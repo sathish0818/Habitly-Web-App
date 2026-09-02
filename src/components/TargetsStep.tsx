@@ -49,7 +49,7 @@ export default function TargetsStep({ onDone, onEditProfile, compact = false }: 
     <div className="flex flex-col gap-lg items-start w-full">
       <div className="flex items-center w-full">
         <div className="flex-1 flex flex-col gap-1 items-start">
-          <p className="font-bold text-xl text-text-primary">Your targets</p>
+          <p className={`font-bold text-xl text-text-primary ${compact ? "" : "md:text-2xl"}`}>Your targets</p>
           <p className="text-sm text-text-secondary">
             Based on your profile — editable, not locked. Turn off anything you don't want tracked.
           </p>
