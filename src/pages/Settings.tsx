@@ -39,11 +39,11 @@ export default function Settings() {
     navigate("/signin");
   };
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     setConfirmingDelete(false);
-    clearAllHabits();
-    logout();
-    showToast("Your data has been cleared and you've been signed out", "success");
+    const ok = await clearAllHabits();
+    await logout();
+    if (ok) showToast("Your data has been cleared and you've been signed out", "success");
     navigate("/signin");
   };
 
@@ -96,9 +96,9 @@ export default function Settings() {
       return;
     }
     const reader = new FileReader();
-    reader.onload = () => {
-      updateProfile({ avatarUrl: reader.result as string });
-      showToast("Profile picture updated", "success");
+    reader.onload = async () => {
+      const ok = await updateProfile({ avatarUrl: reader.result as string });
+      if (ok) showToast("Profile picture updated", "success");
     };
     reader.readAsDataURL(file);
     e.target.value = "";

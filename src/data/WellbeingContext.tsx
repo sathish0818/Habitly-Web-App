@@ -34,7 +34,7 @@ function fromRow(row: WellbeingRow): WellbeingProfile {
 
 type WellbeingContextValue = {
   profile: WellbeingProfile | null;
-  saveProfile: (profile: WellbeingProfile) => void;
+  saveProfile: (profile: WellbeingProfile) => Promise<boolean>;
   unitSystem: UnitSystem;
   setUnitSystem: (system: UnitSystem) => void;
 };
@@ -70,26 +70,26 @@ export function WellbeingProvider({ children }: { children: ReactNode }) {
     };
   }, [userId]);
 
-  const saveProfile = (next: WellbeingProfile) => {
-    if (!userId) return;
+  const saveProfile = async (next: WellbeingProfile) => {
+    if (!userId) return false;
     setProfile(next);
-    supabase
-      .from("wellbeing_profiles")
-      .upsert(
-        {
-          user_id: userId,
-          height_cm: next.heightCm,
-          weight_kg: next.weightKg,
-          age: next.age,
-          sex: next.sex,
-          activity_level: next.activityLevel,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "user_id" }
-      )
-      .then(({ error }) => {
-        if (error) showToast("Couldn't save your profile — try again.", "error");
-      });
+    const { error } = await supabase.from("wellbeing_profiles").upsert(
+      {
+        user_id: userId,
+        height_cm: next.heightCm,
+        weight_kg: next.weightKg,
+        age: next.age,
+        sex: next.sex,
+        activity_level: next.activityLevel,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" }
+    );
+    if (error) {
+      showToast("Couldn't save your profile — try again.", "error");
+      return false;
+    }
+    return true;
   };
 
   const setUnitSystem = (system: UnitSystem) => {

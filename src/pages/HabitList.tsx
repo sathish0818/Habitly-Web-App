@@ -40,11 +40,12 @@ export default function HabitList() {
 
   const pendingHabit = habits.find((h) => h.id === pendingDeleteId);
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!pendingHabit) return;
-    deleteHabit(pendingHabit.id);
-    showToast(`"${pendingHabit.name}" deleted`, "success");
+    const name = pendingHabit.name;
     setPendingDeleteId(null);
+    const ok = await deleteHabit(pendingHabit.id);
+    if (ok) showToast(`"${name}" deleted`, "success");
   };
 
   return (

@@ -18,9 +18,9 @@ export default function OnboardingModal({ onClose }: OnboardingModalProps) {
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>("profile");
 
-  const handleProfileSubmit = (values: ProfileFormValues) => {
-    saveProfile(values);
-    showToast("Profile saved", "success");
+  const handleProfileSubmit = async (values: ProfileFormValues) => {
+    const ok = await saveProfile(values);
+    if (ok) showToast("Profile saved", "success");
     setStep("targets");
   };
 

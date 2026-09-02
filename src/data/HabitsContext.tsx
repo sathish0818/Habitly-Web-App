@@ -191,14 +191,14 @@ type NewQuantifiedHabitInput = {
 type HabitsContextValue = {
   habits: Habit[];
   loading: boolean;
-  addHabit: (input: NewHabitInput) => void;
-  addQuantifiedHabit: (input: NewQuantifiedHabitInput) => void;
-  logQuantifiedValue: (id: string, value: number) => void;
-  updateHabit: (id: string, input: NewHabitInput) => void;
-  deleteHabit: (id: string) => void;
+  addHabit: (input: NewHabitInput) => Promise<boolean>;
+  addQuantifiedHabit: (input: NewQuantifiedHabitInput) => Promise<boolean>;
+  logQuantifiedValue: (id: string, value: number) => Promise<boolean>;
+  updateHabit: (id: string, input: NewHabitInput) => Promise<boolean>;
+  deleteHabit: (id: string) => Promise<boolean>;
   toggleHabit: (id: string) => void;
   getHabit: (id: string) => Habit | undefined;
-  clearAllHabits: () => void;
+  clearAllHabits: () => Promise<boolean>;
   stats: {
     currentStreak: number;
     longestStreak: number;
@@ -291,34 +291,34 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
 
   const reportError = (message: string) => showToast(message, "error");
 
-  const addHabit = (input: NewHabitInput) => {
-    if (!userId) return;
+  const addHabit = async (input: NewHabitInput) => {
+    if (!userId) return false;
     const id = crypto.randomUUID();
     const createdAt = todayStr();
     setStoredHabits((prev) => [
       ...prev,
       { id, name: input.name, icon: input.icon, frequency: input.frequency, reminder: input.reminder, createdAt, completedDates: [] },
     ]);
-    supabase
-      .from("habits")
-      .insert({
-        id,
-        user_id: userId,
-        name: input.name,
-        icon: input.icon,
-        frequency: input.frequency,
-        reminder: input.reminder,
-        created_at: createdAt,
-      })
-      .then(({ error }) => {
-        if (error) reportError(`Couldn't save "${input.name}" — try again.`);
-      });
+    const { error } = await supabase.from("habits").insert({
+      id,
+      user_id: userId,
+      name: input.name,
+      icon: input.icon,
+      frequency: input.frequency,
+      reminder: input.reminder,
+      created_at: createdAt,
+    });
+    if (error) {
+      reportError(`Couldn't save "${input.name}" — try again.`);
+      return false;
+    }
+    return true;
   };
 
   // idempotent by (name, unit): revisiting the targets screen updates the
   // existing target instead of creating a duplicate habit each time.
-  const addQuantifiedHabit = (input: NewQuantifiedHabitInput) => {
-    if (!userId) return;
+  const addQuantifiedHabit = async (input: NewQuantifiedHabitInput) => {
+    if (!userId) return false;
     const existing = storedHabits.find(
       (h) => h.quantified && h.name === input.name && h.quantified.unit === input.unit
     );
@@ -331,14 +331,15 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
             : h
         )
       );
-      supabase
+      const { error } = await supabase
         .from("habits")
         .update({ icon: input.icon, quantified_target: input.targetValue, quantified_unit: input.unit })
-        .eq("id", existing.id)
-        .then(({ error }) => {
-          if (error) reportError(`Couldn't update "${input.name}" — try again.`);
-        });
-      return;
+        .eq("id", existing.id);
+      if (error) {
+        reportError(`Couldn't update "${input.name}" — try again.`);
+        return false;
+      }
+      return true;
     }
 
     const id = crypto.randomUUID();
@@ -357,29 +358,29 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
         loggedByDate: {},
       },
     ]);
-    supabase
-      .from("habits")
-      .insert({
-        id,
-        user_id: userId,
-        name: input.name,
-        icon: input.icon,
-        frequency: "daily",
-        reminder: null,
-        created_at: createdAt,
-        quantified_target: input.targetValue,
-        quantified_unit: input.unit,
-      })
-      .then(({ error }) => {
-        if (error) reportError(`Couldn't save "${input.name}" — try again.`);
-      });
+    const { error } = await supabase.from("habits").insert({
+      id,
+      user_id: userId,
+      name: input.name,
+      icon: input.icon,
+      frequency: "daily",
+      reminder: null,
+      created_at: createdAt,
+      quantified_target: input.targetValue,
+      quantified_unit: input.unit,
+    });
+    if (error) {
+      reportError(`Couldn't save "${input.name}" — try again.`);
+      return false;
+    }
+    return true;
   };
 
-  const logQuantifiedValue = (id: string, value: number) => {
-    if (!userId) return;
+  const logQuantifiedValue = async (id: string, value: number) => {
+    if (!userId) return false;
     const today = todayStr();
     const habit = storedHabits.find((h) => h.id === id);
-    if (!habit?.quantified) return;
+    if (!habit?.quantified) return false;
     const metTarget = value >= habit.quantified.targetValue;
 
     setStoredHabits((prev) =>
@@ -396,18 +397,20 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
       })
     );
 
-    supabase
+    const { error } = await supabase
       .from("habit_completions")
       .upsert(
         { habit_id: id, user_id: userId, date: today, logged_value: value, completed: metTarget },
         { onConflict: "habit_id,date" }
-      )
-      .then(({ error }) => {
-        if (error) reportError("Couldn't save your check-in — try again.");
-      });
+      );
+    if (error) {
+      reportError("Couldn't save your check-in — try again.");
+      return false;
+    }
+    return true;
   };
 
-  const updateHabit = (id: string, input: NewHabitInput) => {
+  const updateHabit = async (id: string, input: NewHabitInput) => {
     setStoredHabits((prev) =>
       prev.map((h) =>
         h.id === id
@@ -415,24 +418,25 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
           : h
       )
     );
-    supabase
+    const { error } = await supabase
       .from("habits")
       .update({ name: input.name, icon: input.icon, frequency: input.frequency, reminder: input.reminder })
-      .eq("id", id)
-      .then(({ error }) => {
-        if (error) reportError(`Couldn't update "${input.name}" — try again.`);
-      });
+      .eq("id", id);
+    if (error) {
+      reportError(`Couldn't update "${input.name}" — try again.`);
+      return false;
+    }
+    return true;
   };
 
-  const deleteHabit = (id: string) => {
+  const deleteHabit = async (id: string) => {
     setStoredHabits((prev) => prev.filter((h) => h.id !== id));
-    supabase
-      .from("habits")
-      .delete()
-      .eq("id", id)
-      .then(({ error }) => {
-        if (error) reportError("Couldn't delete that habit — try again.");
-      });
+    const { error } = await supabase.from("habits").delete().eq("id", id);
+    if (error) {
+      reportError("Couldn't delete that habit — try again.");
+      return false;
+    }
+    return true;
   };
 
   const getHabit = (id: string) => habits.find((h) => h.id === id);
@@ -465,16 +469,15 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const clearAllHabits = () => {
-    if (!userId) return;
+  const clearAllHabits = async () => {
+    if (!userId) return false;
     setStoredHabits([]);
-    supabase
-      .from("habits")
-      .delete()
-      .eq("user_id", userId)
-      .then(({ error }) => {
-        if (error) reportError("Couldn't clear your habits — try again.");
-      });
+    const { error } = await supabase.from("habits").delete().eq("user_id", userId);
+    if (error) {
+      reportError("Couldn't clear your habits — try again.");
+      return false;
+    }
+    return true;
   };
 
   const stats = useMemo(() => {

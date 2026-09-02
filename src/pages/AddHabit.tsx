@@ -8,9 +8,9 @@ export default function AddHabit() {
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  const handleSubmit = (values: HabitFormValues) => {
-    addHabit(values);
-    showToast(`"${values.name}" added`, "success");
+  const handleSubmit = async (values: HabitFormValues) => {
+    const ok = await addHabit(values);
+    if (ok) showToast(`"${values.name}" added`, "success");
     navigate("/");
   };
 

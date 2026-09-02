@@ -71,11 +71,12 @@ export default function CheckInForm({ habitId, onDone }: CheckInFormProps) {
 
   const config = SLIDER_CONFIG[habit.quantified.unit];
 
-  const handleSave = () => {
-    logQuantifiedValue(habit.id, value);
-    if (mood) setMoodForToday(mood);
-    showToast(value >= habit.quantified!.targetValue ? "Target hit — nice work" : "Logged", "success");
+  const handleSave = async () => {
+    const targetValue = habit.quantified!.targetValue;
     onDone();
+    const ok = await logQuantifiedValue(habit.id, value);
+    if (mood) setMoodForToday(mood);
+    if (ok) showToast(value >= targetValue ? "Target hit — nice work" : "Logged", "success");
   };
 
   return (

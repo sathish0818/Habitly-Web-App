@@ -8,9 +8,9 @@ export default function OnboardingProfile() {
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  const handleSubmit = (values: ProfileFormValues) => {
-    saveProfile(values);
-    showToast("Profile saved", "success");
+  const handleSubmit = async (values: ProfileFormValues) => {
+    const ok = await saveProfile(values);
+    if (ok) showToast("Profile saved", "success");
     navigate("/targets");
   };
 

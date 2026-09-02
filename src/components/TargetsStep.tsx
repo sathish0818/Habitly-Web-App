@@ -28,18 +28,25 @@ export default function TargetsStep({ onDone, onEditProfile, compact = false }: 
 
   if (!profile || !suggested) return null;
 
-  const handleContinue = () => {
-    if (waterEnabled) {
-      addQuantifiedHabit({ name: "Drink water", icon: "water_drop", targetValue: waterValue, unit: "ml" });
+  const handleContinue = async () => {
+    const results = await Promise.all([
+      waterEnabled
+        ? addQuantifiedHabit({ name: "Drink water", icon: "water_drop", targetValue: waterValue, unit: "ml" })
+        : null,
+      sleepEnabled
+        ? addQuantifiedHabit({ name: "Sleep", icon: "bedtime", targetValue: sleepValue, unit: "hrs" })
+        : null,
+      stepsEnabled
+        ? addQuantifiedHabit({ name: "Walk", icon: "directions_walk", targetValue: stepsValue, unit: "steps" })
+        : null,
+    ]);
+    const attempted = results.filter((r) => r !== null).length;
+    const count = results.filter((ok) => ok === true).length;
+    if (attempted === 0) {
+      showToast("No habits added", "success");
+    } else if (count > 0) {
+      showToast(`${count} habit${count === 1 ? "" : "s"} added`, "success");
     }
-    if (sleepEnabled) {
-      addQuantifiedHabit({ name: "Sleep", icon: "bedtime", targetValue: sleepValue, unit: "hrs" });
-    }
-    if (stepsEnabled) {
-      addQuantifiedHabit({ name: "Walk", icon: "directions_walk", targetValue: stepsValue, unit: "steps" });
-    }
-    const count = [waterEnabled, sleepEnabled, stepsEnabled].filter(Boolean).length;
-    showToast(count > 0 ? `${count} habit${count === 1 ? "" : "s"} added` : "No habits added", "success");
     onDone();
   };
 

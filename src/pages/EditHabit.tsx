@@ -20,9 +20,9 @@ export default function EditHabit() {
     );
   }
 
-  const handleSubmit = (values: HabitFormValues) => {
-    updateHabit(habit.id, values);
-    showToast(`"${values.name}" updated`, "success");
+  const handleSubmit = async (values: HabitFormValues) => {
+    const ok = await updateHabit(habit.id, values);
+    if (ok) showToast(`"${values.name}" updated`, "success");
     navigate("/");
   };
 

@@ -31,7 +31,7 @@ type AuthContextValue = {
   signup: (name: string, email: string, password: string) => Promise<{ needsEmailConfirmation: boolean }>;
   loginWithGoogleIdToken: (idToken: string) => Promise<void>;
   logout: () => Promise<void>;
-  updateProfile: (updates: Partial<Pick<User, "name" | "avatarUrl">>) => Promise<void>;
+  updateProfile: (updates: Partial<Pick<User, "name" | "avatarUrl">>) => Promise<boolean>;
   updateEmail: (email: string) => Promise<void>;
 };
 
@@ -92,13 +92,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const updateProfile = async (updates: Partial<Pick<User, "name" | "avatarUrl">>) => {
-    if (!user) return;
+    if (!user) return false;
     setUser((prev) => (prev ? { ...prev, ...updates } : prev));
     const patch: Record<string, unknown> = {};
     if (updates.name !== undefined) patch.name = updates.name;
     if (updates.avatarUrl !== undefined) patch.avatar_url = updates.avatarUrl;
     const { error } = await supabase.from("profiles").update(patch).eq("id", user.id);
-    if (error) showToast("Couldn't save your profile — try again.", "error");
+    if (error) {
+      showToast("Couldn't save your profile — try again.", "error");
+      return false;
+    }
+    return true;
   };
 
   const updateEmail = async (email: string) => {
