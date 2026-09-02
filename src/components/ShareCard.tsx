@@ -8,7 +8,7 @@ type ShareCardProps = {
 
 export default function ShareCard({ streak, consistency, habitIcons }: ShareCardProps) {
   return (
-    <div className="relative overflow-hidden rounded-lg w-full aspect-[4/5] max-w-[360px] flex flex-col items-center justify-center gap-lg p-xl bg-gradient-to-br from-accent to-accent-hover text-accent-on">
+    <div className="relative overflow-hidden rounded-lg w-full aspect-[4/5] max-w-[360px] flex flex-col items-center justify-between gap-lg p-xl bg-gradient-to-br from-accent to-accent-hover text-accent-on">
       <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 20% 20%, white 0, transparent 40%)" }} />
       <div className="flex items-center gap-2">
         <div className="bg-surface rounded-full size-8 flex items-center justify-center">
