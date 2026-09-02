@@ -108,7 +108,7 @@ export default function Settings() {
     <div className="flex flex-col gap-lg items-start pt-lg px-md md:px-2xl pb-2xl w-full">
       <p className="font-bold text-2xl text-text-primary">Settings</p>
 
-      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,820px)_360px] gap-xl items-stretch w-full">
+      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,960px)_360px] gap-xl items-stretch w-full">
         <div className="flex flex-col gap-md items-start w-full">
           <p className="font-semibold text-lg text-text-primary">Profile</p>
           <div className="bg-surface border border-border rounded-lg flex flex-col gap-lg items-start px-lg py-[18px] w-full">
@@ -177,7 +177,7 @@ export default function Settings() {
       </div>
 
       <div className="flex flex-col md:flex-row gap-xl items-start w-full">
-      <div className="flex flex-col gap-lg items-start w-full md:flex-1 md:min-w-0 md:max-w-[820px]">
+      <div className="flex flex-col gap-lg items-start w-full md:flex-1 md:min-w-0 md:max-w-[960px]">
         <div className="flex flex-col gap-md items-start w-full">
           <p className="font-semibold text-lg text-text-primary">Wellbeing profile</p>
           <div className="bg-surface border border-border rounded-lg flex items-center gap-md p-lg w-full">

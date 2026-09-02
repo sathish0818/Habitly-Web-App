@@ -84,7 +84,7 @@ export default function StreakShare() {
           </button>
         </div>
 
-        <div className="flex flex-col gap-lg items-start flex-1 min-w-0 w-full">
+        <div className="flex flex-col gap-lg items-start flex-1 min-w-0 w-full md:max-w-[820px]">
           <div className="flex flex-col gap-md items-start w-full">
             <p className="font-semibold text-sm text-text-primary">Your journey</p>
             <div className="grid grid-cols-2 gap-md w-full">
