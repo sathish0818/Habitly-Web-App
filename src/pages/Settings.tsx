@@ -105,8 +105,8 @@ export default function Settings() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-xl items-start pt-lg px-md md:px-2xl w-full">
-      <div className="flex flex-col gap-lg items-start w-full md:w-[680px] md:shrink-0">
+    <div className="flex flex-col md:flex-row gap-xl items-start pt-lg px-md md:px-2xl pb-2xl w-full max-w-[1080px]">
+      <div className="flex flex-col gap-lg items-start w-full md:flex-1 md:min-w-0 md:max-w-[680px]">
         <p className="font-bold text-2xl text-text-primary">Settings</p>
 
         <div className="flex flex-col gap-md items-start w-full">
@@ -234,13 +234,13 @@ export default function Settings() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-lg items-start flex-1 min-w-0 w-full md:pt-[43px]">
-        <div className="bg-surface border border-border rounded-lg flex flex-col gap-3 items-start p-lg w-full md:max-w-[360px]">
+      <div className="flex flex-col gap-lg items-start w-full md:w-[320px] md:shrink-0 md:pt-[43px]">
+        <div className="bg-surface border border-border rounded-lg flex flex-col gap-3 items-start p-lg w-full">
           <div className="flex gap-sm items-center text-accent">
             <Icon name="workspace_premium" style={{ fontSize: 20 }} />
             <p className="font-semibold text-md">Free plan</p>
           </div>
-          <p className="text-sm text-text-primary w-full md:max-w-[320px]">
+          <p className="text-sm text-text-primary w-full">
             Unlimited habits and daily reminders. Upgrade for calendar history and yearly insights.
           </p>
           <button
@@ -253,7 +253,7 @@ export default function Settings() {
           </button>
         </div>
 
-        <div className="flex flex-col gap-md items-start w-full md:max-w-[360px]">
+        <div className="flex flex-col gap-md items-start w-full">
           <p className="font-semibold text-lg text-text-primary">Account</p>
           <div className="bg-surface border border-border rounded-lg flex flex-col gap-sm items-start px-lg py-[18px] w-full">
             <Button variant="secondary" size="md" onClick={handleSignOut}>
