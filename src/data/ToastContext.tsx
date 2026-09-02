@@ -37,7 +37,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`flex items-center gap-3 bg-surface border rounded-md shadow-lg py-md px-lg max-w-full md:max-w-md ${
+            className={`flex items-center gap-3 bg-surface border rounded-md shadow-lg py-md px-lg max-w-full md:max-w-[28rem] ${
               toast.type === "error" ? "border-error" : "border-success-text"
             }`}
             role="status"
