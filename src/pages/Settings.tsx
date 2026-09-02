@@ -105,8 +105,8 @@ export default function Settings() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-xl items-start pt-lg px-md md:px-2xl pb-2xl w-full max-w-[1080px]">
-      <div className="flex flex-col gap-lg items-start w-full md:flex-1 md:min-w-0 md:max-w-[680px]">
+    <div className="flex flex-col md:flex-row gap-xl items-start pt-lg px-md md:px-2xl pb-2xl w-full max-w-[1280px]">
+      <div className="flex flex-col gap-lg items-start w-full md:flex-1 md:min-w-0 md:max-w-[820px]">
         <p className="font-bold text-2xl text-text-primary">Settings</p>
 
         <div className="flex flex-col gap-md items-start w-full">
@@ -234,7 +234,7 @@ export default function Settings() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-lg items-start w-full md:w-[320px] md:shrink-0 md:pt-[43px]">
+      <div className="flex flex-col gap-lg items-start w-full md:w-[360px] md:shrink-0 md:pt-[43px]">
         <div className="bg-surface border border-border rounded-lg flex flex-col gap-3 items-start p-lg w-full">
           <div className="flex gap-sm items-center text-accent">
             <Icon name="workspace_premium" style={{ fontSize: 20 }} />
