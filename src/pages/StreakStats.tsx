@@ -152,6 +152,9 @@ export default function StreakStats() {
 
       <div className="bg-surface border border-border rounded-lg flex flex-col gap-md items-start p-lg w-full">
         <p className="font-semibold text-md text-text-primary">Habit breakdown</p>
+        {ranked.length === 0 && (
+          <p className="text-sm text-text-secondary">Add a habit to see how each one is trending.</p>
+        )}
         <div className="flex flex-col items-start w-full">
           {ranked.map((habit, i) => (
             <div
