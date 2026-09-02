@@ -108,8 +108,7 @@ export default function Settings() {
     <div className="flex flex-col gap-lg items-start pt-lg px-md md:px-2xl pb-2xl w-full max-w-[1280px] mx-auto">
       <p className="font-bold text-2xl text-text-primary">Settings</p>
 
-      <div className="flex flex-col md:flex-row gap-xl items-start w-full">
-      <div className="flex flex-col gap-lg items-start w-full md:flex-1 md:min-w-0 md:max-w-[820px]">
+      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,820px)_360px] gap-xl items-stretch w-full">
         <div className="flex flex-col gap-md items-start w-full">
           <p className="font-semibold text-lg text-text-primary">Profile</p>
           <div className="bg-surface border border-border rounded-lg flex flex-col gap-lg items-start px-lg py-[18px] w-full">
@@ -153,6 +152,32 @@ export default function Settings() {
           </div>
         </div>
 
+        <div className="flex flex-col gap-md items-start w-full h-full">
+          <p className="hidden md:block invisible font-semibold text-lg" aria-hidden="true">
+            Profile
+          </p>
+          <div className="bg-surface border border-border rounded-lg flex flex-col gap-3 items-start p-lg w-full flex-1">
+            <div className="flex gap-sm items-center text-accent">
+              <Icon name="workspace_premium" style={{ fontSize: 20 }} />
+              <p className="font-semibold text-md">Free plan</p>
+            </div>
+            <p className="text-sm text-text-primary w-full">
+              Unlimited habits and daily reminders. Upgrade for calendar history and yearly insights.
+            </p>
+            <button
+              type="button"
+              onClick={handleUpgradeClick}
+              className="flex gap-1 items-center text-accent cursor-pointer hover:underline"
+            >
+              <span className="font-semibold text-sm">Upgrade to Pro</span>
+              <Icon name="arrow_forward" style={{ fontSize: 16 }} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-xl items-start w-full">
+      <div className="flex flex-col gap-lg items-start w-full md:flex-1 md:min-w-0 md:max-w-[820px]">
         <div className="flex flex-col gap-md items-start w-full">
           <p className="font-semibold text-lg text-text-primary">Wellbeing profile</p>
           <div className="bg-surface border border-border rounded-lg flex items-center gap-md p-lg w-full">
@@ -236,27 +261,6 @@ export default function Settings() {
       </div>
 
       <div className="flex flex-col gap-lg items-start w-full md:w-[360px] md:shrink-0">
-        <div className="hidden md:flex flex-col gap-md items-start w-full -mb-[8px]" aria-hidden="true">
-          <p className="invisible font-semibold text-lg">Profile</p>
-        </div>
-        <div className="bg-surface border border-border rounded-lg flex flex-col gap-3 items-start p-lg w-full">
-          <div className="flex gap-sm items-center text-accent">
-            <Icon name="workspace_premium" style={{ fontSize: 20 }} />
-            <p className="font-semibold text-md">Free plan</p>
-          </div>
-          <p className="text-sm text-text-primary w-full">
-            Unlimited habits and daily reminders. Upgrade for calendar history and yearly insights.
-          </p>
-          <button
-            type="button"
-            onClick={handleUpgradeClick}
-            className="flex gap-1 items-center text-accent cursor-pointer hover:underline"
-          >
-            <span className="font-semibold text-sm">Upgrade to Pro</span>
-            <Icon name="arrow_forward" style={{ fontSize: 16 }} />
-          </button>
-        </div>
-
         <div className="flex flex-col gap-md items-start w-full">
           <p className="font-semibold text-lg text-text-primary">Account</p>
           <div className="bg-surface border border-border rounded-lg flex flex-col gap-sm items-start px-lg py-[18px] w-full">
