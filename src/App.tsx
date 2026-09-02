@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { isSupabaseConfigured } from "./lib/supabaseClient";
+import ConfigError from "./pages/ConfigError";
 import { AuthProvider } from "./data/AuthContext";
 import { HabitsProvider } from "./data/HabitsContext";
 import { WellbeingProvider } from "./data/WellbeingContext";
@@ -22,6 +24,8 @@ import StreakShare from "./pages/StreakShare";
 import NotFound from "./pages/NotFound";
 
 export default function App() {
+  if (!isSupabaseConfigured) return <ConfigError />;
+
   return (
     <ToastProvider>
       <AuthProvider>
