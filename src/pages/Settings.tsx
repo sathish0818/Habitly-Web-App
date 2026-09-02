@@ -105,7 +105,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="flex flex-col gap-lg items-start pt-lg px-md md:px-2xl pb-2xl w-full">
+    <div className="flex flex-col gap-lg items-start pt-lg md:pt-2xl px-md md:px-2xl pb-2xl w-full">
       <p className="font-bold text-2xl text-text-primary">Settings</p>
 
       <div className="grid grid-cols-1 md:grid-cols-[minmax(0,960px)_360px] gap-xl items-stretch w-full">

@@ -64,8 +64,8 @@ export default function StreakShare() {
   };
 
   return (
-    <div className="pt-lg md:pt-2xl px-md md:px-2xl pb-2xl w-full">
-      <div className="flex flex-col gap-1 items-start mb-lg">
+    <div className="flex flex-col gap-lg items-start pt-lg md:pt-2xl px-md md:px-2xl pb-2xl w-full">
+      <div className="flex flex-col gap-1 items-start">
         <p className="font-bold text-xl md:text-2xl text-text-primary">Your Streak</p>
         <p className="text-sm text-text-secondary">Track your momentum, and share it when you're proud of it.</p>
       </div>
