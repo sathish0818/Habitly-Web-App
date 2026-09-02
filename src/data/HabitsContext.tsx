@@ -235,7 +235,7 @@ function computeWeeklyTrend(habits: Habit[]): number[] {
 }
 
 export function HabitsProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { showToast } = useToast();
   const userId = user?.id ?? null;
 
@@ -244,6 +244,11 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
+    // Auth hasn't resolved yet -- userId briefly reads as null while the
+    // session is still loading, which used to look identical to "logged out
+    // with 0 habits" and made Home.tsx flash the onboarding screen on every
+    // login. Wait for auth to settle before drawing any conclusion.
+    if (authLoading) return;
     if (!userId) {
       setStoredHabits([]);
       setLoading(false);
@@ -269,7 +274,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [userId, showToast]);
+  }, [userId, authLoading, showToast]);
 
   // re-derive today's completion / streaks when the tab regains focus, so an
   // app left open across midnight picks up the new day without a reload
