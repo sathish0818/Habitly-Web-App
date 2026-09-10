@@ -29,14 +29,14 @@ export default function CardMenu({ onEdit, onDelete }: CardMenuProps) {
         aria-label="Habit options"
         aria-haspopup="menu"
         aria-expanded={open}
-        className="size-7 rounded-sm flex items-center justify-center text-text-secondary hover:bg-surface-alt cursor-pointer"
+        className="size-7 rounded-sm flex items-center justify-center text-text-secondary hover:bg-surface-alt active:scale-90 transition-transform duration-150 cursor-pointer"
       >
         <Icon name="more_vert" style={{ fontSize: 18 }} />
       </button>
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-1 w-40 bg-surface border border-border rounded-md shadow-lg py-xs z-10"
+          className="absolute right-0 top-full mt-1 w-40 bg-surface border border-border rounded-md shadow-lg py-xs z-10 animate-menu-in origin-top-right"
         >
           <button
             type="button"

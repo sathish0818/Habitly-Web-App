@@ -117,7 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     patch.avatar_url = updates.avatarUrl !== undefined ? updates.avatarUrl : user.avatarUrl ?? null;
     const { error } = await supabase.from("profiles").upsert(patch, { onConflict: "id" });
     if (error) {
-      showToast("Couldn't save your profile — try again.", "error");
+      showToast("Couldn't save your profile. Try again.", "error");
       return false;
     }
     return true;

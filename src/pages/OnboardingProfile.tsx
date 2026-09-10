@@ -28,7 +28,7 @@ export default function OnboardingProfile() {
         <div className="flex flex-col gap-1 items-start">
           <p className="font-bold text-xl text-text-primary">Let's personalize your targets</p>
           <p className="text-sm text-text-secondary">
-            A few quick details so we can suggest daily water, sleep, and step goals that actually fit you — not generic numbers.
+            A few quick details so we can suggest daily water, sleep, and step goals that actually fit you, not generic numbers.
           </p>
         </div>
 

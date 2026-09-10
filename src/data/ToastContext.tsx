@@ -6,6 +6,7 @@ type ToastItem = {
   id: number;
   message: string;
   type: ToastType;
+  leaving: boolean;
 };
 
 type ToastContextValue = {
@@ -15,18 +16,22 @@ type ToastContextValue = {
 const ToastContext = createContext<ToastContextValue | null>(null);
 
 const AUTO_DISMISS_MS = 3500;
+const EXIT_ANIMATION_MS = 180;
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const idRef = useRef(0);
 
   const dismiss = useCallback((id: number) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+    setToasts((prev) => prev.map((t) => (t.id === id ? { ...t, leaving: true } : t)));
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, EXIT_ANIMATION_MS);
   }, []);
 
   const showToast = useCallback((message: string, type: ToastType = "success") => {
     const id = ++idRef.current;
-    setToasts((prev) => [...prev, { id, message, type }]);
+    setToasts((prev) => [...prev, { id, message, type, leaving: false }]);
     setTimeout(() => dismiss(id), AUTO_DISMISS_MS);
   }, [dismiss]);
 
@@ -38,8 +43,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={toast.id}
             className={`flex items-center gap-3 bg-surface border rounded-md shadow-lg py-md px-lg max-w-full md:max-w-[28rem] ${
-              toast.type === "error" ? "border-error" : "border-success-text"
-            }`}
+              toast.leaving ? "animate-toast-out" : "animate-toast-in"
+            } ${toast.type === "error" ? "border-error" : "border-success-text"}`}
             role="status"
           >
             <span
@@ -57,7 +62,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               type="button"
               onClick={() => dismiss(toast.id)}
               aria-label="Dismiss"
-              className="text-text-secondary hover:text-text-primary cursor-pointer"
+              className="text-text-secondary hover:text-text-primary cursor-pointer transition-transform duration-150 active:scale-90"
             >
               <span className="material-symbols-rounded" style={{ fontSize: 16 }}>close</span>
             </button>

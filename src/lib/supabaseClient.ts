@@ -8,7 +8,7 @@ export const isSupabaseConfigured = Boolean(url && anonKey);
 if (!isSupabaseConfigured) {
   // eslint-disable-next-line no-console
   console.error(
-    "Supabase isn't configured — set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (in .env.local locally, or your host's environment variables in production)."
+    "Supabase isn't configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (in .env.local locally, or your host's environment variables in production)."
   );
 }
 

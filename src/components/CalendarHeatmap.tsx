@@ -29,7 +29,7 @@ export default function CalendarHeatmap({ days }: CalendarHeatmapProps) {
               <div
                 key={di}
                 className={`size-3 rounded-xs ${colorClassFor(day.rate)}`}
-                title={`${day.date} — ${Math.round(day.rate * 100)}% complete`}
+                title={`${day.date}: ${Math.round(day.rate * 100)}% complete`}
               />
             ) : (
               <div key={di} className="size-3" />

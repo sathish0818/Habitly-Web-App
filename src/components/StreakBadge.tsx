@@ -29,7 +29,7 @@ export default function StreakBadge({ days, state = "active", className = "" }: 
       className={`flex items-center gap-xs px-sm py-xs rounded-lg shrink-0 transition-opacity ${
         isBroken ? "bg-surface-alt text-text-secondary opacity-60" : LEVEL_CLASSES[level]
       } ${isGrace ? "opacity-60" : ""} ${className}`}
-      title={isGrace ? "Momentum dipped — check in today to keep it going" : undefined}
+      title={isGrace ? "Momentum dipped: check in today to keep it going" : undefined}
     >
       <Icon name="local_fire_department" style={{ fontSize: 14 }} />
       <span className="text-xs font-bold">{days}</span>

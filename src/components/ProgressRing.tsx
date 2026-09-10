@@ -31,6 +31,7 @@ export default function ProgressRing({ progress, size = 44, strokeWidth = 4 }: P
         strokeDasharray={circumference}
         strokeDashoffset={offset}
         strokeLinecap="round"
+        className="transition-[stroke-dashoffset,stroke] duration-300 ease-out"
       />
     </svg>
   );

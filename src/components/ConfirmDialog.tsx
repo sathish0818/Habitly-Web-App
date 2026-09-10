@@ -16,9 +16,9 @@ export default function ConfirmDialog({
   onCancel,
 }: ConfirmDialogProps) {
   return (
-    <div className="fixed inset-0 bg-text-primary/40 flex items-center justify-center z-50 px-lg" onClick={onCancel}>
+    <div className="fixed inset-0 bg-text-primary/40 flex items-center justify-center z-50 px-lg animate-backdrop-in" onClick={onCancel}>
       <div
-        className="bg-surface rounded-lg p-lg w-[360px] max-w-full flex flex-col gap-md items-start"
+        className="bg-surface rounded-lg p-lg w-[360px] max-w-full flex flex-col gap-md items-start animate-modal-in"
         onClick={(e) => e.stopPropagation()}
         role="alertdialog"
         aria-modal="true"
@@ -32,7 +32,7 @@ export default function ConfirmDialog({
           <button
             type="button"
             onClick={onConfirm}
-            className="flex items-center justify-center gap-sm rounded-md font-semibold px-md py-sm text-sm bg-error text-accent-on hover:opacity-90 cursor-pointer"
+            className="flex items-center justify-center gap-sm rounded-md font-semibold px-md py-sm text-sm bg-error text-accent-on hover:opacity-90 active:scale-[0.97] transition-transform duration-150 cursor-pointer"
           >
             {confirmLabel}
           </button>

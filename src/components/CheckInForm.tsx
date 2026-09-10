@@ -76,7 +76,7 @@ export default function CheckInForm({ habitId, onDone }: CheckInFormProps) {
     onDone();
     const ok = await logQuantifiedValue(habit.id, value);
     if (mood) setMoodForToday(mood);
-    if (ok) showToast(value >= targetValue ? "Target hit — nice work" : "Logged", "success");
+    if (ok) showToast(value >= targetValue ? "Target hit, nice work" : "Logged", "success");
   };
 
   return (

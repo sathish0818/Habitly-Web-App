@@ -9,11 +9,11 @@ type CheckInModalProps = {
 export default function CheckInModal({ habitId, onClose }: CheckInModalProps) {
   return (
     <div
-      className="fixed inset-0 bg-text-primary/40 flex items-center justify-center z-50 px-md"
+      className="fixed inset-0 bg-text-primary/40 flex items-center justify-center z-50 px-md animate-backdrop-in"
       onClick={onClose}
     >
       <div
-        className="relative bg-surface rounded-lg shadow-lg flex flex-col gap-lg items-start px-xl py-2xl w-full max-w-[480px]"
+        className="relative bg-surface rounded-lg shadow-lg flex flex-col gap-lg items-start px-xl py-2xl w-full max-w-[480px] animate-modal-in"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -22,7 +22,7 @@ export default function CheckInModal({ habitId, onClose }: CheckInModalProps) {
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute top-lg right-lg flex items-center justify-center size-8 rounded-sm text-text-secondary hover:bg-surface-alt hover:text-text-primary cursor-pointer"
+          className="absolute top-lg right-lg flex items-center justify-center size-8 rounded-sm text-text-secondary hover:bg-surface-alt hover:text-text-primary active:scale-90 transition-transform duration-150 cursor-pointer"
         >
           <Icon name="close" style={{ fontSize: 20 }} />
         </button>

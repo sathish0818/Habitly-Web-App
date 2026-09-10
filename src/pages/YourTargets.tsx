@@ -25,7 +25,7 @@ export default function YourTargets() {
           </div>
           <p className="font-semibold text-md text-text-primary">Let's set up your profile first</p>
           <p className="text-sm text-text-secondary">
-            We need a few details about you — height, weight, age, and activity level — before we can suggest personalized targets.
+            We need a few details about you (height, weight, age, and activity level) before we can suggest personalized targets.
           </p>
           <button
             type="button"

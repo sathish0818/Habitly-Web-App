@@ -58,7 +58,7 @@ export default function TargetsStep({ onDone, onEditProfile, compact = false }: 
         <div className="flex-1 flex flex-col gap-1 items-start">
           <p className={`font-bold text-xl text-text-primary ${compact ? "" : "md:text-2xl"}`}>Your targets</p>
           <p className="text-sm text-text-secondary">
-            Based on your profile — editable, not locked. Turn off anything you don't want tracked.
+            Based on your profile: editable, not locked. Turn off anything you don't want tracked.
           </p>
         </div>
         {onEditProfile && (
@@ -117,7 +117,7 @@ export default function TargetsStep({ onDone, onEditProfile, compact = false }: 
 
       <div className="bg-surface border border-border rounded-lg flex flex-col sm:flex-row gap-md sm:items-center justify-between p-lg w-full">
         <p className="text-xs text-text-secondary max-w-[480px]">
-          These are general wellness suggestions, not medical advice — adjust them to fit you.
+          These are general wellness suggestions, not medical advice. Adjust them to fit you.
         </p>
         <button
           type="button"

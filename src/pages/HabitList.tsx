@@ -66,7 +66,7 @@ export default function HabitList() {
           <Icon name="auto_awesome" className="text-accent shrink-0" style={{ fontSize: 22 }} />
           <div className="flex flex-col gap-0.5 flex-1 min-w-0">
             <p className="font-semibold text-sm text-text-primary">Get personalized water, sleep, and step targets</p>
-            <p className="text-xs text-text-secondary">Based on your body, not guesswork — takes under a minute.</p>
+            <p className="text-xs text-text-secondary">Based on your body, not guesswork. Takes under a minute.</p>
           </div>
           <Icon name="arrow_forward" className="text-accent shrink-0" style={{ fontSize: 18 }} />
         </button>
@@ -83,7 +83,7 @@ export default function HabitList() {
             </p>
             <p className="text-sm text-text-secondary">
               {percentDone >= 100
-                ? "All done — great work today."
+                ? "All done, great work today."
                 : percentDone >= 50
                   ? "Keep going, you're halfway there."
                   : "Let's get a few done today."}

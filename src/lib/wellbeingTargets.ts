@@ -64,13 +64,13 @@ export function suggestStepsTarget(profile: Pick<WellbeingProfile, "activityLeve
     return {
       value: 10000,
       unit: "steps",
-      reason: "You told us you're highly active, so we've set a higher target — 7,000/day already captures most of the health benefit.",
+      reason: "You told us you're highly active, so we've set a higher target: 10,000/day, above the general baseline that covers most of the health benefit.",
     };
   }
   return {
     value: 7000,
     unit: "steps",
-    reason: "7,000 steps/day is the evidence-backed minimum that captures most of the benefit walking provides — you can always raise it later.",
+    reason: "7,000 steps/day is the evidence-backed minimum that captures most of the benefit walking provides. You can always raise it later.",
   };
 }
 

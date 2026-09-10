@@ -11,13 +11,13 @@ export default function Toggle({ checked, onChange, ...rest }: ToggleProps) {
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className={`relative w-11 h-6 rounded-full shrink-0 transition-colors cursor-pointer ${
+      className={`relative w-11 h-6 rounded-full shrink-0 transition-[background-color,transform] duration-150 cursor-pointer active:scale-95 ${
         checked ? "bg-accent" : "bg-border"
       }`}
       {...rest}
     >
       <span
-        className={`absolute top-0.5 left-0.5 size-5 rounded-full bg-surface shadow-sm transition-transform ${
+        className={`absolute top-0.5 left-0.5 size-5 rounded-full bg-surface shadow-sm transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
           checked ? "translate-x-5" : "translate-x-0"
         }`}
       />

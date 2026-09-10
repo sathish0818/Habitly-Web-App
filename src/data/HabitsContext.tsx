@@ -264,7 +264,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
         ]);
       if (cancelled) return;
       if (habitsError || completionsError) {
-        showToast("Couldn't load your habits — check your connection and reload.", "error");
+        showToast("Couldn't load your habits. Check your connection and reload.", "error");
         setLoading(false);
         return;
       }
@@ -314,7 +314,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
       created_at: createdAt,
     });
     if (error) {
-      reportError(`Couldn't save "${input.name}" — try again.`);
+      reportError(`Couldn't save "${input.name}". Try again.`);
       return false;
     }
     return true;
@@ -341,7 +341,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
         .update({ icon: input.icon, quantified_target: input.targetValue, quantified_unit: input.unit })
         .eq("id", existing.id);
       if (error) {
-        reportError(`Couldn't update "${input.name}" — try again.`);
+        reportError(`Couldn't update "${input.name}". Try again.`);
         return false;
       }
       return true;
@@ -375,7 +375,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
       quantified_unit: input.unit,
     });
     if (error) {
-      reportError(`Couldn't save "${input.name}" — try again.`);
+      reportError(`Couldn't save "${input.name}". Try again.`);
       return false;
     }
     return true;
@@ -409,7 +409,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
         { onConflict: "habit_id,date" }
       );
     if (error) {
-      reportError("Couldn't save your check-in — try again.");
+      reportError("Couldn't save your check-in. Try again.");
       return false;
     }
     return true;
@@ -428,7 +428,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
       .update({ name: input.name, icon: input.icon, frequency: input.frequency, reminder: input.reminder })
       .eq("id", id);
     if (error) {
-      reportError(`Couldn't update "${input.name}" — try again.`);
+      reportError(`Couldn't update "${input.name}". Try again.`);
       return false;
     }
     return true;
@@ -438,7 +438,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
     setStoredHabits((prev) => prev.filter((h) => h.id !== id));
     const { error } = await supabase.from("habits").delete().eq("id", id);
     if (error) {
-      reportError("Couldn't delete that habit — try again.");
+      reportError("Couldn't delete that habit. Try again.");
       return false;
     }
     return true;
@@ -470,7 +470,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
           .upsert({ habit_id: id, user_id: userId, date: today, completed: true }, { onConflict: "habit_id,date" });
 
     write.then(({ error }: { error: { message: string } | null }) => {
-      if (error) reportError("Couldn't save your check-in — try again.");
+      if (error) reportError("Couldn't save your check-in. Try again.");
     });
   };
 
@@ -479,7 +479,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
     setStoredHabits([]);
     const { error } = await supabase.from("habits").delete().eq("user_id", userId);
     if (error) {
-      reportError("Couldn't clear your habits — try again.");
+      reportError("Couldn't clear your habits. Try again.");
       return false;
     }
     return true;

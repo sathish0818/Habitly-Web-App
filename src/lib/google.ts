@@ -34,10 +34,10 @@ export function isGoogleSignInConfigured(): boolean {
 
 /** Renders Google's own "Sign in with Google" button into `container`.
  * Using Google's rendered button (rather than a custom one paired with the
- * One Tap prompt) is what makes the click reliably produce a credential —
+ * One Tap prompt) is what makes the click reliably produce a credential:
  * `google.accounts.id.prompt()` can silently no-op after prior dismissals.
  * Re-initializes on every call (cheap) so each mount's own `onCredential`
- * closure is the one actually wired to the button — GIS is a singleton
+ * closure is the one actually wired to the button. GIS is a singleton
  * across the SPA, so a stale closure from a previous page would otherwise
  * keep firing after client-side navigation. */
 export function renderGoogleButton(

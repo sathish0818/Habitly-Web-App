@@ -25,7 +25,7 @@ export default function SignUp() {
     try {
       const { needsEmailConfirmation } = await signup(name.trim(), email.trim(), password);
       if (needsEmailConfirmation) {
-        showToast("Account created — check your email to confirm, then sign in.", "success");
+        showToast("Account created. Check your email to confirm, then sign in.", "success");
         navigate("/signin");
       } else {
         navigate("/");

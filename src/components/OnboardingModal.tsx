@@ -30,9 +30,9 @@ export default function OnboardingModal({ onClose }: OnboardingModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-text-primary/40 flex items-center justify-center z-50 px-md py-2xl overflow-y-auto" onClick={onClose}>
+    <div className="fixed inset-0 bg-text-primary/40 flex items-center justify-center z-50 px-md py-2xl overflow-y-auto animate-backdrop-in" onClick={onClose}>
       <div
-        className="relative bg-surface rounded-lg shadow-lg flex flex-col gap-lg items-start px-xl py-2xl w-full max-w-[480px] my-auto"
+        className="relative bg-surface rounded-lg shadow-lg flex flex-col gap-lg items-start px-xl py-2xl w-full max-w-[480px] my-auto animate-modal-in"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -41,7 +41,7 @@ export default function OnboardingModal({ onClose }: OnboardingModalProps) {
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute top-lg right-lg flex items-center justify-center size-8 rounded-sm text-text-secondary hover:bg-surface-alt hover:text-text-primary cursor-pointer"
+          className="absolute top-lg right-lg flex items-center justify-center size-8 rounded-sm text-text-secondary hover:bg-surface-alt hover:text-text-primary active:scale-90 transition-transform duration-150 cursor-pointer"
         >
           <Icon name="close" style={{ fontSize: 20 }} />
         </button>
@@ -61,7 +61,7 @@ export default function OnboardingModal({ onClose }: OnboardingModalProps) {
             <div className="flex flex-col gap-1 items-start pr-2xl">
               <p className="font-bold text-xl text-text-primary">Let's personalize your targets</p>
               <p className="text-sm text-text-secondary">
-                A few quick details so we can suggest daily water, sleep, and step goals that actually fit you — not generic numbers.
+                A few quick details so we can suggest daily water, sleep, and step goals that actually fit you, not generic numbers.
               </p>
             </div>
 

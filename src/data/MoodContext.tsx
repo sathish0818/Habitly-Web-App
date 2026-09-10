@@ -51,7 +51,7 @@ export function MoodProvider({ children }: { children: ReactNode }) {
       .from("moods")
       .upsert({ user_id: userId, date, mood }, { onConflict: "user_id,date" })
       .then(({ error }) => {
-        if (error) showToast("Couldn't save your mood — try again.", "error");
+        if (error) showToast("Couldn't save your mood. Try again.", "error");
       });
   };
 

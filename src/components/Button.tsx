@@ -24,7 +24,7 @@ export default function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`flex items-center justify-center gap-sm rounded-md font-semibold whitespace-nowrap transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${SIZE_CLASSES[size]} ${VARIANT_CLASSES[variant]} ${className}`}
+      className={`flex items-center justify-center gap-sm rounded-md font-semibold whitespace-nowrap transition-[background-color,transform] duration-150 cursor-pointer active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 ${SIZE_CLASSES[size]} ${VARIANT_CLASSES[variant]} ${className}`}
       {...rest}
     >
       {children}

@@ -35,7 +35,7 @@ export default function HabitCard({
   const { unitSystem } = useWellbeing();
   return (
     <div
-      className={`flex items-center gap-md p-md rounded-lg w-full transition-colors ${
+      className={`flex items-center gap-md p-md rounded-lg w-full transition-[background-color,border-color,box-shadow,transform] duration-150 hover:-translate-y-0.5 hover:shadow-sm ${
         checked ? "bg-success" : "bg-surface border border-border hover:border-accent"
       }`}
     >

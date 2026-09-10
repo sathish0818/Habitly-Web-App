@@ -56,7 +56,7 @@ export default function StreakShare() {
       }
     } catch (err) {
       if (err instanceof Error && err.name !== "AbortError") {
-        showToast("Couldn't share — try again", "error");
+        showToast("Couldn't share. Try again.", "error");
       }
     } finally {
       setSharing(false);
@@ -118,7 +118,7 @@ export default function StreakShare() {
               <div className="flex items-center gap-md">
                 <Icon name="workspace_premium" className="text-accent" style={{ fontSize: 28 }} />
                 <p className="text-sm font-semibold text-text-primary">
-                  You've unlocked every milestone — legendary consistency.
+                  You've unlocked every milestone: legendary consistency.
                 </p>
               </div>
             )}

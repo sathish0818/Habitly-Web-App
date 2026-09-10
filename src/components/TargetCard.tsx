@@ -45,7 +45,7 @@ export default function TargetCard({
 
   return (
     <div
-      className={`flex flex-col gap-md p-lg rounded-lg border w-full transition-colors ${
+      className={`flex flex-col gap-md p-lg rounded-lg border w-full transition-[background-color,border-color,opacity,box-shadow,transform] duration-150 hover:-translate-y-0.5 hover:shadow-sm ${
         enabled ? "bg-surface border-border" : "bg-surface-alt border-border opacity-70"
       }`}
     >
@@ -67,7 +67,7 @@ export default function TargetCard({
           type="button"
           onClick={() => adjust(-step)}
           disabled={!enabled}
-          className="flex items-center justify-center size-8 rounded-sm border border-border text-text-secondary hover:bg-surface-alt disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shrink-0"
+          className="flex items-center justify-center size-8 rounded-sm border border-border text-text-secondary hover:bg-surface-alt active:scale-90 transition-transform duration-150 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 cursor-pointer shrink-0"
           aria-label={`Decrease ${label} target`}
         >
           <Icon name="remove" style={{ fontSize: 16 }} />
@@ -79,7 +79,7 @@ export default function TargetCard({
           type="button"
           onClick={() => adjust(step)}
           disabled={!enabled}
-          className="flex items-center justify-center size-8 rounded-sm border border-border text-text-secondary hover:bg-surface-alt disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shrink-0"
+          className="flex items-center justify-center size-8 rounded-sm border border-border text-text-secondary hover:bg-surface-alt active:scale-90 transition-transform duration-150 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 cursor-pointer shrink-0"
           aria-label={`Increase ${label} target`}
         >
           <Icon name="add" style={{ fontSize: 16 }} />

@@ -37,7 +37,7 @@ export default function HabitRow({
   const { unitSystem } = useWellbeing();
   return (
     <div
-      className={`flex items-center gap-md py-md w-full ${!isLast ? "border-b border-border" : ""}`}
+      className={`flex items-center gap-md py-md px-sm -mx-sm rounded-md w-[calc(100%+16px)] transition-colors duration-150 hover:bg-surface-alt ${!isLast ? "border-b border-border" : ""}`}
     >
       <div className="bg-surface-alt rounded-md size-10 flex items-center justify-center shrink-0">
         <Icon name={icon} className="text-text-secondary" style={{ fontSize: 18 }} />

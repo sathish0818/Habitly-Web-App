@@ -96,7 +96,7 @@ export function WellbeingProvider({ children }: { children: ReactNode }) {
       { onConflict: "user_id" }
     );
     if (error) {
-      showToast("Couldn't save your profile — try again.", "error");
+      showToast("Couldn't save your profile. Try again.", "error");
       return false;
     }
     return true;

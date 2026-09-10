@@ -31,7 +31,7 @@ export default function StreakStats() {
     sinceWeekOne === 0
       ? "Steady since week 1"
       : `${sinceWeekOne > 0 ? "Up" : "Down"} ${Math.abs(sinceWeekOne)} points since week 1${
-          sinceWeekOne > 0 ? " — your most consistent stretch yet" : ""
+          sinceWeekOne > 0 ? ", your most consistent stretch yet" : ""
         }`;
   const quarterLabel = `${sinceWeekOne >= 0 ? "+" : ""}${sinceWeekOne}% this quarter`;
 
@@ -97,7 +97,7 @@ export default function StreakStats() {
       <div className="bg-surface border border-border rounded-lg flex flex-col gap-5 items-start p-lg w-full">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-sm w-full">
           <div className="flex flex-col gap-0.5 items-start">
-            <p className="font-semibold text-md text-text-primary">Completion rate — last 10 weeks</p>
+            <p className="font-semibold text-md text-text-primary">Completion rate: last 10 weeks</p>
             <p className="text-xs text-text-secondary">{sinceWeekOneLabel}</p>
           </div>
           <div
@@ -120,7 +120,7 @@ export default function StreakStats() {
 
       <div className="bg-surface border border-border rounded-lg flex flex-col gap-md items-start p-lg w-full">
         <div className="flex items-center justify-between w-full">
-          <p className="font-semibold text-md text-text-primary">Consistency — last {HEATMAP_WEEKS} weeks</p>
+          <p className="font-semibold text-md text-text-primary">Consistency: last {HEATMAP_WEEKS} weeks</p>
           <div className="flex items-center gap-xs text-xs text-text-secondary">
             <span>Less</span>
             <span className="size-3 rounded-xs bg-surface-alt" />
